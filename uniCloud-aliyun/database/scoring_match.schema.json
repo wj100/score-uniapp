@@ -11,9 +11,9 @@
       "title": "比赛ID"
     },
     "time": {
-      "bsonType": "timestamp",
-      "description": "比赛时间，比赛结束时间，精确到秒",
-      "title": "比赛时间"
+      "bsonType": "int",
+      "description": "比赛时间戳，比赛结束时间，精确到秒",
+      "title": "比赛时间戳"
     },
     "match_type": {
       "bsonType": "int",
@@ -46,5 +46,35 @@
       "description": "预留字段，比赛名，允许为空",
       "title": "比赛名"
     }
-  }
+  },
+  "indexes": [
+    {
+      "IndexName": "time_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "time",
+            "Direction": "-1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    },
+    {
+      "IndexName": "match_type_time_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "match_type",
+            "Direction": "1"
+          },
+          {
+            "Name": "time",
+            "Direction": "-1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    }
+  ]
 }

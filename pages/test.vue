@@ -7,7 +7,9 @@
     <view class="section">
       <button class="test-btn" @click="testInitPlayers">1. 初始化队员</button>
       <button class="test-btn" @click="testGetPlayers">2. 获取队员列表</button>
-      <button class="test-btn" @click="testCloudFunction">3. 直接测试云函数</button>
+      <button class="test-btn" @click="testSubmitMatch">3. 测试提交比赛</button>
+      <button class="test-btn" @click="testGetMatches">4. 测试获取比赛记录</button>
+      <button class="test-btn" @click="testCloudFunction">5. 直接测试云函数</button>
     </view>
     
     <view class="result-section">
@@ -61,6 +63,69 @@ export default {
       } catch (error) {
         this.result = `获取失败: ${error.message}`
         console.error('获取队员失败:', error)
+      }
+    },
+    
+    async testSubmitMatch() {
+      try {
+        this.result = '正在测试提交比赛...'
+        
+        const result = await uniCloud.callFunction({
+          name: 'badminton-api',
+          data: {
+            action: 'submitSingleMatch',
+            data: {
+              player1: '吉志',
+              player2: '小鲁',
+              score1: 21,
+              score2: 19,
+              match_name: '测试比赛'
+            }
+          }
+        })
+        
+        console.log('提交比赛结果:', result)
+        this.result = `提交比赛结果: ${JSON.stringify(result.result, null, 2)}`
+        
+      } catch (error) {
+        this.result = `提交比赛失败: ${error.message}`
+        console.error('提交比赛失败:', error)
+      }
+    },
+    
+    async testGetMatches() {
+      try {
+        this.result = '正在测试获取比赛记录...'
+        
+        const result = await uniCloud.callFunction({
+          name: 'badminton-api',
+          data: {
+            action: 'getSingleMatches',
+            data: {
+              timeRange: 'all',
+              limit: 5
+            }
+          }
+        })
+        
+        console.log('获取比赛记录结果:', result)
+        
+        if (result.result.code === 0) {
+          console.log('比赛数据:', result.result.data)
+          // 测试日期格式化
+          result.result.data.forEach(match => {
+            console.log('比赛时间戳:', match.time)
+            console.log('比赛日期字符串:', match.date)
+            const testDate = new Date(match.time * 1000)
+            console.log('转换后的日期:', testDate.toLocaleString())
+          })
+        }
+        
+        this.result = `获取比赛记录结果: ${JSON.stringify(result.result, null, 2)}`
+        
+      } catch (error) {
+        this.result = `获取比赛记录失败: ${error.message}`
+        console.error('获取比赛记录失败:', error)
       }
     },
     

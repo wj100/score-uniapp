@@ -16,9 +16,9 @@
       "title": "比赛ID"
     },
     "time": {
-      "bsonType": "timestamp",
-      "description": "比赛时间，直接取对应比赛id的时间填入，比赛结束时间，精确到秒",
-      "title": "比赛时间"
+      "bsonType": "int",
+      "description": "比赛时间戳，直接取对应比赛id的时间填入，比赛结束时间，精确到秒",
+      "title": "比赛时间戳"
     },
     "match_type": {
       "bsonType": "int",
@@ -42,5 +42,67 @@
       "title": "胜负结果",
       "enum": [0, 1]
     }
-  }
+  },
+  "indexes": [
+    {
+      "IndexName": "player_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "player",
+            "Direction": "1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    },
+    {
+      "IndexName": "player_time_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "player",
+            "Direction": "1"
+          },
+          {
+            "Name": "time",
+            "Direction": "-1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    },
+    {
+      "IndexName": "player_match_type_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "player",
+            "Direction": "1"
+          },
+          {
+            "Name": "match_type",
+            "Direction": "1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    },
+    {
+      "IndexName": "match_type_time_index",
+      "MgoKeySchema": {
+        "MgoIndexKeys": [
+          {
+            "Name": "match_type",
+            "Direction": "1"
+          },
+          {
+            "Name": "time",
+            "Direction": "-1"
+          }
+        ],
+        "MgoIsUnique": false
+      }
+    }
+  ]
 }

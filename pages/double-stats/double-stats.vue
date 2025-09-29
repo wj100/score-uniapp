@@ -174,8 +174,22 @@ export default {
       this.loadData()
     },
     
-    formatDate(dateStr) {
-      const date = new Date(dateStr)
+    formatDate(dateValue) {
+      let date
+      if (typeof dateValue === 'number') {
+        // 时间戳
+        date = new Date(dateValue * 1000)
+      } else if (typeof dateValue === 'string') {
+        // 日期字符串
+        date = new Date(dateValue)
+      } else {
+        return '--'
+      }
+      
+      if (isNaN(date.getTime())) {
+        return '--'
+      }
+      
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
       return `${month}-${day}`

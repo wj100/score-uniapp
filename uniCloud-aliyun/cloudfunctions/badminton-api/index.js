@@ -187,7 +187,7 @@ async function submitSingleMatch(data) {
       };
     }
 
-    const matchTime = new Date();
+    const matchTime = Math.floor(Date.now() / 1000); // 时间戳（秒）
     const player1Score = parseInt(score1);
     const player2Score = parseInt(score2);
 
@@ -249,29 +249,29 @@ async function getSingleMatches(data) {
     
     if (timeRange !== 'all') {
       const now = new Date();
-      let startTime, endTime;
+      let startTimestamp, endTimestamp;
       
       switch (timeRange) {
         case 'today':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() / 1000);
           break;
         case 'yesterday':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
           break;
         case 'thisMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth(), 1);
-          endTime = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime() / 1000);
           break;
         case 'lastMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
           break;
       }
       
-      if (startTime && endTime) {
-        whereCondition.time = db.command.gte(startTime).and(db.command.lt(endTime));
+      if (startTimestamp && endTimestamp) {
+        whereCondition.time = db.command.gte(startTimestamp).and(db.command.lt(endTimestamp));
       }
     }
 
@@ -281,10 +281,25 @@ async function getSingleMatches(data) {
       .limit(parseInt(limit))
       .get();
 
+    // 转换数据格式以保持兼容性
+    const formattedData = res.data.map(match => ({
+      _id: match._id,
+      id: match.id,
+      time: match.time,
+      match_type: match.match_type,
+      player1: match.player1,
+      player2: match.player2,
+      score1: match.score1,
+      score2: match.score2,
+      winner: match.score1 > match.score2 ? match.player1 : match.player2,
+      date: new Date(match.time * 1000).toISOString().split('T')[0], // 时间戳转日期字符串
+      match_name: match.match_name
+    }));
+
     return {
       code: 0,
       message: '获取成功',
-      data: res.data
+      data: formattedData
     };
   } catch (error) {
     return {
@@ -305,29 +320,29 @@ async function getSingleStats(data) {
     
     if (timeRange !== 'all') {
       const now = new Date();
-      let startTime, endTime;
+      let startTimestamp, endTimestamp;
       
       switch (timeRange) {
         case 'today':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() / 1000);
           break;
         case 'yesterday':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
           break;
         case 'thisMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth(), 1);
-          endTime = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime() / 1000);
           break;
         case 'lastMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
           break;
       }
       
-      if (startTime && endTime) {
-        whereCondition.time = db.command.gte(startTime).and(db.command.lt(endTime));
+      if (startTimestamp && endTimestamp) {
+        whereCondition.time = db.command.gte(startTimestamp).and(db.command.lt(endTimestamp));
       }
     }
 
@@ -423,7 +438,7 @@ async function submitDoubleMatch(data) {
       };
     }
 
-    const matchTime = new Date();
+    const matchTime = Math.floor(Date.now() / 1000); // 时间戳（秒）
     const teamAScore = parseInt(scoreA);
     const teamBScore = parseInt(scoreB);
     
@@ -496,29 +511,29 @@ async function getDoubleMatches(data) {
     
     if (timeRange !== 'all') {
       const now = new Date();
-      let startTime, endTime;
+      let startTimestamp, endTimestamp;
       
       switch (timeRange) {
         case 'today':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() / 1000);
           break;
         case 'yesterday':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
           break;
         case 'thisMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth(), 1);
-          endTime = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime() / 1000);
           break;
         case 'lastMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
           break;
       }
       
-      if (startTime && endTime) {
-        whereCondition.time = db.command.gte(startTime).and(db.command.lt(endTime));
+      if (startTimestamp && endTimestamp) {
+        whereCondition.time = db.command.gte(startTimestamp).and(db.command.lt(endTimestamp));
       }
     }
 
@@ -539,7 +554,7 @@ async function getDoubleMatches(data) {
       scoreA: match.score1,
       scoreB: match.score2,
       winner: match.score1 > match.score2 ? 'A' : 'B',
-      date: match.time.toISOString().split('T')[0],
+      date: new Date(match.time * 1000).toISOString().split('T')[0], // 时间戳转日期字符串
       match_name: match.match_name
     }));
 
@@ -567,29 +582,29 @@ async function getDoubleStats(data) {
     
     if (timeRange !== 'all') {
       const now = new Date();
-      let startTime, endTime;
+      let startTimestamp, endTimestamp;
       
       switch (timeRange) {
         case 'today':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() / 1000);
           break;
         case 'yesterday':
-          startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
           break;
         case 'thisMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth(), 1);
-          endTime = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime() / 1000);
           break;
         case 'lastMonth':
-          startTime = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          endTime = new Date(now.getFullYear(), now.getMonth(), 1);
+          startTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime() / 1000);
+          endTimestamp = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
           break;
       }
       
-      if (startTime && endTime) {
-        whereCondition.time = db.command.gte(startTime).and(db.command.lt(endTime));
+      if (startTimestamp && endTimestamp) {
+        whereCondition.time = db.command.gte(startTimestamp).and(db.command.lt(endTimestamp));
       }
     }
 

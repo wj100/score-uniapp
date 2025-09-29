@@ -88,8 +88,18 @@ const _sfc_main = {
       this.currentTimeRange = range;
       this.loadData();
     },
-    formatDate(dateStr) {
-      const date = new Date(dateStr);
+    formatDate(dateValue) {
+      let date;
+      if (typeof dateValue === "number") {
+        date = new Date(dateValue * 1e3);
+      } else if (typeof dateValue === "string") {
+        date = new Date(dateValue);
+      } else {
+        return "--";
+      }
+      if (isNaN(date.getTime())) {
+        return "--";
+      }
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
       return `${month}-${day}`;

@@ -1,4 +1,4 @@
-// 羽毛球记分系统数据库操作示例（新表结构）
+// 羽毛球记分系统数据库操作示例（新表结构 + 索引优化）
 
 // 1. 查询现有队员数据
 db.collection('players').get();
@@ -12,22 +12,28 @@ db.collection('players').get();
 //   {name: '杭宁', avatar: '', status: 1, create_time: new Date()}
 // ]);
 
-// 3. 查询所有比赛记录（新表结构）
+// 3. 查询所有比赛记录（使用时间索引，按时间倒序）
 // db.collection('scoring_match').orderBy('time', 'desc').get();
 
-// 4. 查询所有选手比赛详情
+// 4. 查询所有选手比赛详情（使用时间索引）
 // db.collection('scoring_player_match').orderBy('time', 'desc').get();
 
-// 5. 查询单打比赛记录
+// 5. 查询单打比赛记录（使用复合索引：match_type + time）
 // db.collection('scoring_match').where({match_type: 1}).orderBy('time', 'desc').get();
 
-// 6. 查询双打比赛记录
+// 6. 查询双打比赛记录（使用复合索引：match_type + time）
 // db.collection('scoring_match').where({match_type: 2}).orderBy('time', 'desc').get();
 
-// 7. 查询某个选手的比赛详情
+// 7. 查询某个选手的比赛详情（使用player索引）
 // db.collection('scoring_player_match').where({player: '吉志'}).orderBy('time', 'desc').get();
 
-// 8. 统计某个选手的胜负场次
+// 8. 查询某个选手的单打比赛（使用复合索引：player + match_type）
+// db.collection('scoring_player_match').where({player: '吉志', match_type: 1}).orderBy('time', 'desc').get();
+
+// 9. 查询某个选手的双打比赛（使用复合索引：player + match_type）
+// db.collection('scoring_player_match').where({player: '吉志', match_type: 2}).orderBy('time', 'desc').get();
+
+// 10. 统计某个选手的胜负场次（使用player索引）
 // db.collection('scoring_player_match').aggregate()
 //   .match({player: '吉志'})
 //   .group({
@@ -37,7 +43,26 @@ db.collection('players').get();
 //   })
 //   .end();
 
-// 9. 删除所有数据（谨慎使用）
+// 11. 查询今日比赛（使用时间戳范围查询，利用time索引）
+// const today = new Date();
+// const startTimestamp = Math.floor(new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime() / 1000);
+// const endTimestamp = Math.floor(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() / 1000);
+// db.collection('scoring_match').where({
+//   time: db.command.gte(startTimestamp).and(db.command.lt(endTimestamp))
+// }).orderBy('time', 'desc').get();
+
+// 12. 查询某个选手今日比赛（使用复合索引：player + time）
+// db.collection('scoring_player_match').where({
+//   player: '吉志',
+//   time: db.command.gte(startTimestamp).and(db.command.lt(endTimestamp))
+// }).orderBy('time', 'desc').get();
+
+// 13. 时间戳转换示例
+// const timestamp = 1703123456; // 示例时间戳
+// const date = new Date(timestamp * 1000); // 转换为Date对象
+// console.log('时间戳:', timestamp, '对应时间:', date.toLocaleString());
+
+// 13. 删除所有数据（谨慎使用）
 // db.collection('players').where({}).remove();
 // db.collection('scoring_match').where({}).remove();
 // db.collection('scoring_player_match').where({}).remove();

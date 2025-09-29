@@ -88,8 +88,18 @@ const _sfc_main = {
       this.currentTimeRange = range;
       this.loadData();
     },
-    formatDate(dateStr) {
-      const date = new Date(dateStr);
+    formatDate(dateValue) {
+      let date;
+      if (typeof dateValue === "number") {
+        date = new Date(dateValue * 1e3);
+      } else if (typeof dateValue === "string") {
+        date = new Date(dateValue);
+      } else {
+        return "--";
+      }
+      if (isNaN(date.getTime())) {
+        return "--";
+      }
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
       return `${month}-${day}`;
@@ -121,7 +131,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   }, $data.currentMatches.length === 0 ? {} : {
     e: common_vendor.f($data.currentMatches, (match, k0, i0) => {
       return {
-        a: common_vendor.t($options.formatDate(match.date)),
+        a: common_vendor.t($options.formatDate(match.time)),
         b: common_vendor.t(match.player1),
         c: common_vendor.t(match.player2),
         d: common_vendor.t(match.score1),
