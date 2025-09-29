@@ -119,19 +119,13 @@
       </view>
     </view>
     
-    <!-- 自定义 tabBar -->
-    <custom-tabbar ref="customTabbar" />
   </view>
 </template>
 
 <script>
 import { getPlayers, saveSingleMatch, getSingleMatches, initPlayers } from '@/utils/storage.js'
-import CustomTabbar from '@/components/custom-tabbar/custom-tabbar.vue'
 
 export default {
-  components: {
-    CustomTabbar
-  },
   data() {
     return {
       players: [],
@@ -185,12 +179,6 @@ export default {
   
   onShow() {
     this.loadTodayMatches()
-    // 更新tab状态
-    this.$nextTick(() => {
-      if (this.$refs.customTabbar) {
-        this.$refs.customTabbar.setCurrentIndex()
-      }
-    })
   },
   
   methods: {
@@ -371,7 +359,6 @@ export default {
   padding: 32rpx;
   background-color: #f5f5f5;
   min-height: 100vh;
-  padding-bottom: 120rpx; /* 为自定义 tabBar 留出空间 */
 }
 
 .section {

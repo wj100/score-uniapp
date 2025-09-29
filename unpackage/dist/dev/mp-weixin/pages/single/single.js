@@ -1,11 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_storage = require("../../utils/storage.js");
-const CustomTabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
 const _sfc_main = {
-  components: {
-    CustomTabbar
-  },
   data() {
     return {
       players: [],
@@ -13,8 +9,8 @@ const _sfc_main = {
       player2: "",
       score1: "",
       score2: "",
-      selectedPlayer1Index: -1,
-      selectedPlayer2Index: -1,
+      selectedPlayer1Index: 0,
+      selectedPlayer2Index: 0,
       todayMatches: [],
       showPlayerModal: false,
       modalPlayerList: [],
@@ -30,6 +26,15 @@ const _sfc_main = {
     availablePlayers2() {
       return this.players.filter((player) => player !== this.player1);
     },
+    // 返回中间位置的索引
+    middleIndex1() {
+      const length = this.availablePlayers1.length;
+      return length > 0 ? Math.floor(length / 2) : 0;
+    },
+    middleIndex2() {
+      const length = this.availablePlayers2.length;
+      return length > 0 ? Math.floor(length / 2) : 0;
+    },
     canSubmit() {
       return this.player1 && this.player2 && this.player1 !== this.player2 && this.score1 !== "" && this.score2 !== "" && (parseInt(this.score1) > 0 || parseInt(this.score2) > 0);
     }
@@ -39,29 +44,24 @@ const _sfc_main = {
   },
   onShow() {
     this.loadTodayMatches();
-    this.$nextTick(() => {
-      if (this.$refs.customTabbar) {
-        this.$refs.customTabbar.setCurrentIndex();
-      }
-    });
   },
   methods: {
     async loadData() {
       try {
-        common_vendor.index.__f__("log", "at pages/single/single.vue:188", "开始加载队员数据...");
+        common_vendor.index.__f__("log", "at pages/single/single.vue:187", "开始加载队员数据...");
         this.players = await utils_storage.getPlayers();
-        common_vendor.index.__f__("log", "at pages/single/single.vue:190", "获取到的队员列表:", this.players);
+        common_vendor.index.__f__("log", "at pages/single/single.vue:189", "获取到的队员列表:", this.players);
         if (this.players.length === 0) {
-          common_vendor.index.__f__("log", "at pages/single/single.vue:193", "队员列表为空，尝试初始化...");
+          common_vendor.index.__f__("log", "at pages/single/single.vue:192", "队员列表为空，尝试初始化...");
           common_vendor.index.showLoading({
             title: "正在初始化数据..."
           });
           const initResult = await utils_storage.initPlayers();
-          common_vendor.index.__f__("log", "at pages/single/single.vue:200", "初始化结果:", initResult);
+          common_vendor.index.__f__("log", "at pages/single/single.vue:199", "初始化结果:", initResult);
           common_vendor.index.hideLoading();
           if (initResult) {
             this.players = await utils_storage.getPlayers();
-            common_vendor.index.__f__("log", "at pages/single/single.vue:206", "重新获取队员列表:", this.players);
+            common_vendor.index.__f__("log", "at pages/single/single.vue:205", "重新获取队员列表:", this.players);
             common_vendor.index.showToast({
               title: "数据初始化成功",
               icon: "success"
@@ -77,7 +77,7 @@ const _sfc_main = {
         }
         this.loadTodayMatches();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:224", "加载队员数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:223", "加载队员数据失败:", error);
         this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "网络异常，使用离线数据",
@@ -145,7 +145,7 @@ const _sfc_main = {
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:307", "提交失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:306", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
@@ -189,22 +189,14 @@ const _sfc_main = {
     }
   }
 };
-if (!Array) {
-  const _easycom_custom_tabbar2 = common_vendor.resolveComponent("custom-tabbar");
-  _easycom_custom_tabbar2();
-}
-const _easycom_custom_tabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
-if (!Math) {
-  _easycom_custom_tabbar();
-}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.t($data.player1 || "选择队员1"),
-    b: $data.selectedPlayer1Index,
+    b: $options.middleIndex1,
     c: $options.availablePlayers1,
     d: common_vendor.o((...args) => $options.onPlayer1Change && $options.onPlayer1Change(...args)),
     e: common_vendor.t($data.player2 || "选择队员2"),
-    f: $data.selectedPlayer2Index,
+    f: $options.middleIndex2,
     g: $options.availablePlayers2,
     h: common_vendor.o((...args) => $options.onPlayer2Change && $options.onPlayer2Change(...args)),
     i: common_vendor.t($data.player1 || "队员1"),
@@ -242,9 +234,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     y: common_vendor.o(() => {
     }),
     z: common_vendor.o((...args) => $options.closePlayerModal && $options.closePlayerModal(...args))
-  } : {}, {
-    A: common_vendor.sr("customTabbar", "6410b918-0")
-  });
+  } : {});
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6410b918"]]);
 wx.createPage(MiniProgramPage);

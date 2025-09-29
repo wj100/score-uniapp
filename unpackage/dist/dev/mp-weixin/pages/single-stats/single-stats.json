@@ -1,6 +1,4 @@
 {
   "navigationBarTitleText": "单打战绩",
-  "usingComponents": {
-    "custom-tabbar": "../../components/custom-tabbar/custom-tabbar"
-  }
+  "usingComponents": {}
 }
