@@ -1,17 +1,67 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
-			"path": "pages/index/index",
+			"path": "pages/single/single",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "单打"
+			}
+		},
+		{
+			"path": "pages/single-stats/single-stats",
+			"style": {
+				"navigationBarTitleText": "单打战绩"
+			}
+		},
+		{
+			"path": "pages/double/double",
+			"style": {
+				"navigationBarTitleText": "双打"
+			}
+		},
+		{
+			"path": "pages/double-stats/double-stats",
+			"style": {
+				"navigationBarTitleText": "双打战绩"
 			}
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "羽毛球记分",
+		"navigationBarBackgroundColor": "#4CAF50",
+		"backgroundColor": "#f5f5f5"
+	},
+	"tabBar": {
+		"color": "#666666",
+		"selectedColor": "#4CAF50",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "white",
+		"list": [
+			{
+				"pagePath": "pages/single/single",
+				"text": "单打",
+				"iconPath": "static/single.png",
+				"selectedIconPath": "static/single-active.png"
+			},
+			{
+				"pagePath": "pages/single-stats/single-stats",
+				"text": "单打战绩",
+				"iconPath": "static/stats.png",
+				"selectedIconPath": "static/stats-active.png"
+			},
+			{
+				"pagePath": "pages/double/double",
+				"text": "双打",
+				"iconPath": "static/double.png",
+				"selectedIconPath": "static/double-active.png"
+			},
+			{
+				"pagePath": "pages/double-stats/double-stats",
+				"text": "双打战绩",
+				"iconPath": "static/stats.png",
+				"selectedIconPath": "static/stats-active.png"
+			}
+		]
 	},
 	"uniIdRouter": {}
 }
