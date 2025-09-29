@@ -5,7 +5,7 @@
       <text class="section-title">队员1</text>
       <view class="player-selection">
         <view class="player-item">
-          <picker :value="selectedPlayer1Index" :range="availablePlayers1" @change="onPlayer1Change">
+          <picker :value="middleIndex1" :range="availablePlayers1" @change="onPlayer1Change">
             <view class="picker">
               <text>{{ player1 || '选择队员1' }}</text>
               <text class="arrow">▼</text>
@@ -16,7 +16,7 @@
         <view class="vs-text">vs</view>
         
         <view class="player-item">
-          <picker :value="selectedPlayer2Index" :range="availablePlayers2" @change="onPlayer2Change">
+          <picker :value="middleIndex2" :range="availablePlayers2" @change="onPlayer2Change">
             <view class="picker">
               <text>{{ player2 || '选择队员2' }}</text>
               <text class="arrow">▼</text>
@@ -139,8 +139,8 @@ export default {
       player2: '',
       score1: '',
       score2: '',
-      selectedPlayer1Index: -1,
-      selectedPlayer2Index: -1,
+      selectedPlayer1Index: 0,
+      selectedPlayer2Index: 0,
       todayMatches: [],
       showPlayerModal: false,
       modalPlayerList: [],
@@ -156,6 +156,17 @@ export default {
     
     availablePlayers2() {
       return this.players.filter(player => player !== this.player1)
+    },
+    
+    // 返回中间位置的索引
+    middleIndex1() {
+      const length = this.availablePlayers1.length
+      return length > 0 ? Math.floor(length / 2) : 0
+    },
+    
+    middleIndex2() {
+      const length = this.availablePlayers2.length
+      return length > 0 ? Math.floor(length / 2) : 0
     },
     
     canSubmit() {
@@ -465,7 +476,7 @@ export default {
   color: white;
   border: none;
   border-radius: 50rpx;
-  padding: 32rpx;
+  padding: 12rpx;
   font-size: 32rpx;
   font-weight: bold;
 }

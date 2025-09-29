@@ -9,7 +9,7 @@
         <text class="team-label">A队</text>
         <view class="team-players">
           <view class="player-item">
-            <picker :value="selectedPlayerA1Index" :range="availablePlayersA1" @change="onPlayerA1Change">
+            <picker :value="middleIndexA1" :range="availablePlayersA1" @change="onPlayerA1Change">
               <view class="picker">
                 <text>{{ playerA1 || '选择队员1' }}</text>
                 <text class="arrow">▼</text>
@@ -20,7 +20,7 @@
           <text class="and-text">&</text>
           
           <view class="player-item">
-            <picker :value="selectedPlayerA2Index" :range="availablePlayersA2" @change="onPlayerA2Change">
+            <picker :value="middleIndexA2" :range="availablePlayersA2" @change="onPlayerA2Change">
               <view class="picker">
                 <text>{{ playerA2 || '选择队员2' }}</text>
                 <text class="arrow">▼</text>
@@ -40,7 +40,7 @@
         <text class="team-label">B队</text>
         <view class="team-players">
           <view class="player-item">
-            <picker :value="selectedPlayerB1Index" :range="availablePlayersB1" @change="onPlayerB1Change">
+            <picker :value="middleIndexB1" :range="availablePlayersB1" @change="onPlayerB1Change">
               <view class="picker">
                 <text>{{ playerB1 || '选择队员3' }}</text>
                 <text class="arrow">▼</text>
@@ -51,7 +51,7 @@
           <text class="and-text">&</text>
           
           <view class="player-item">
-            <picker :value="selectedPlayerB2Index" :range="availablePlayersB2" @change="onPlayerB2Change">
+            <picker :value="middleIndexB2" :range="availablePlayersB2" @change="onPlayerB2Change">
               <view class="picker">
                 <text>{{ playerB2 || '选择队员4' }}</text>
                 <text class="arrow">▼</text>
@@ -498,7 +498,7 @@ export default {
   color: white;
   border: none;
   border-radius: 50rpx;
-  padding: 32rpx;
+  padding: 12rpx;
   font-size: 32rpx;
   font-weight: bold;
 }
