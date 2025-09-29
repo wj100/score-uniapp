@@ -67,7 +67,7 @@ const _sfc_main = {
               icon: "success"
             });
           } else {
-            this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+            this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
             common_vendor.index.showToast({
               title: "网络异常，使用离线数据",
               icon: "none",
@@ -78,7 +78,7 @@ const _sfc_main = {
         this.loadTodayMatches();
       } catch (error) {
         common_vendor.index.__f__("error", "at pages/single/single.vue:224", "加载队员数据失败:", error);
-        this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+        this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "网络异常，使用离线数据",
           icon: "none",

@@ -86,7 +86,7 @@ export async function getPlayers() {
 
 // 降级数据：默认队员列表
 function getFallbackPlayers() {
-  return ['吉志', '小鲁', '建华', '汪骏', '杭宁'];
+  return ['言志', '小鲁', '建华', '汪骏', '杭宁'];
 }
 
 // 初始化默认队员

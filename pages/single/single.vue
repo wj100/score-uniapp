@@ -210,7 +210,7 @@ export default {
             })
           } else {
             // 初始化失败，使用降级数据
-            this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
+            this.players = ['言志', '小鲁', '建华', '汪骏', '杭宁']
             uni.showToast({
               title: '网络异常，使用离线数据',
               icon: 'none',
@@ -223,7 +223,7 @@ export default {
       } catch (error) {
         console.error('加载队员数据失败:', error)
         // 使用默认队员数据
-        this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
+        this.players = ['言志', '小鲁', '建华', '汪骏', '杭宁']
         uni.showToast({
           title: '网络异常，使用离线数据',
           icon: 'none',

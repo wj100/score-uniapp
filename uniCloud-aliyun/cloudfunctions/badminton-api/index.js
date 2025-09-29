@@ -160,7 +160,7 @@ async function addPlayer(data) {
 // 初始化默认队员
 async function initPlayers() {
   try {
-    const defaultPlayers = ['吉志', '小鲁', '建华', '汪骏', '杭宁'];
+    const defaultPlayers = ['言志', '小鲁', '建华', '汪骏', '杭宁'];
     
     // 检查是否已经初始化过
     const existingPlayers = await retryDatabaseOperation(async () => {

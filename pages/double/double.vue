@@ -244,7 +244,7 @@ export default {
       } catch (error) {
         console.error('加载队员数据失败:', error)
         // 使用默认队员数据
-        this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
+        this.players = ['言志', '小鲁', '建华', '汪骏', '杭宁']
         uni.showToast({
           title: '加载失败，使用默认数据',
           icon: 'none'

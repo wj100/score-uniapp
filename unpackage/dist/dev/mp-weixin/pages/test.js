@@ -39,7 +39,7 @@ const _sfc_main = {
           data: {
             action: "submitSingleMatch",
             data: {
-              player1: "吉志",
+              player1: "言志",
               player2: "小鲁",
               score1: 21,
               score2: 19,

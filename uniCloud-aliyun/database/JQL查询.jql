@@ -5,7 +5,7 @@ db.collection('players').get();
 
 // 2. 初始化队员数据（如果没有数据，取消注释运行）
 // db.collection('players').add([
-//   {name: '吉志', avatar: '', status: 1, create_time: new Date()},
+//   {name: '言志', avatar: '', status: 1, create_time: new Date()},
 //   {name: '小鲁', avatar: '', status: 1, create_time: new Date()},
 //   {name: '建华', avatar: '', status: 1, create_time: new Date()},
 //   {name: '汪骏', avatar: '', status: 1, create_time: new Date()},
@@ -25,17 +25,17 @@ db.collection('players').get();
 // db.collection('scoring_match').where({match_type: 2}).orderBy('time', 'desc').get();
 
 // 7. 查询某个选手的比赛详情（使用player索引）
-// db.collection('scoring_player_match').where({player: '吉志'}).orderBy('time', 'desc').get();
+// db.collection('scoring_player_match').where({player: '言志'}).orderBy('time', 'desc').get();
 
 // 8. 查询某个选手的单打比赛（使用复合索引：player + match_type）
-// db.collection('scoring_player_match').where({player: '吉志', match_type: 1}).orderBy('time', 'desc').get();
+// db.collection('scoring_player_match').where({player: '言志', match_type: 1}).orderBy('time', 'desc').get();
 
 // 9. 查询某个选手的双打比赛（使用复合索引：player + match_type）
-// db.collection('scoring_player_match').where({player: '吉志', match_type: 2}).orderBy('time', 'desc').get();
+// db.collection('scoring_player_match').where({player: '言志', match_type: 2}).orderBy('time', 'desc').get();
 
 // 10. 统计某个选手的胜负场次（使用player索引）
 // db.collection('scoring_player_match').aggregate()
-//   .match({player: '吉志'})
+//   .match({player: '言志'})
 //   .group({
 //     _id: '$result',
 //     count: $.sum(1),
@@ -53,7 +53,7 @@ db.collection('players').get();
 
 // 12. 查询某个选手今日比赛（使用复合索引：player + time）
 // db.collection('scoring_player_match').where({
-//   player: '吉志',
+//   player: '言志',
 //   time: db.command.gte(startTimestamp).and(db.command.lt(endTimestamp))
 // }).orderBy('time', 'desc').get();
 

@@ -77,7 +77,7 @@ const _sfc_main = {
         this.loadTodayMatches();
       } catch (error) {
         common_vendor.index.__f__("error", "at pages/double/double.vue:245", "加载队员数据失败:", error);
-        this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+        this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "加载失败，使用默认数据",
           icon: "none"

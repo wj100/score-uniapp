@@ -47,7 +47,7 @@ async function getPlayers() {
   return getFallbackPlayers();
 }
 function getFallbackPlayers() {
-  return ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+  return ["言志", "小鲁", "建华", "汪骏", "杭宁"];
 }
 async function initPlayers() {
   const maxRetries = 2;
