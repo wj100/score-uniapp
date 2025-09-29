@@ -2,7 +2,7 @@
   <view class="container">
     <!-- 队员选择 -->
     <view class="section">
-      <text class="section-title">队员</text>
+      <text class="section-title">队员1</text>
       <view class="player-selection">
         <view class="player-item">
           <picker :value="selectedPlayer1Index" :range="availablePlayers1" @change="onPlayer1Change">
@@ -118,13 +118,20 @@
         </view>
       </view>
     </view>
+    
+    <!-- 自定义 tabBar -->
+    <custom-tabbar ref="customTabbar" />
   </view>
 </template>
 
 <script>
 import { getPlayers, saveSingleMatch, getSingleMatches, initPlayers } from '@/utils/storage.js'
+import CustomTabbar from '@/components/custom-tabbar/custom-tabbar.vue'
 
 export default {
+  components: {
+    CustomTabbar
+  },
   data() {
     return {
       players: [],
@@ -167,6 +174,12 @@ export default {
   
   onShow() {
     this.loadTodayMatches()
+    // 更新tab状态
+    this.$nextTick(() => {
+      if (this.$refs.customTabbar) {
+        this.$refs.customTabbar.setCurrentIndex()
+      }
+    })
   },
   
   methods: {
@@ -178,12 +191,31 @@ export default {
         
         if (this.players.length === 0) {
           console.log('队员列表为空，尝试初始化...')
+          uni.showLoading({
+            title: '正在初始化数据...'
+          })
+          
           // 尝试初始化队员
           const initResult = await initPlayers()
           console.log('初始化结果:', initResult)
+          
+          uni.hideLoading()
+          
           if (initResult) {
             this.players = await getPlayers()
             console.log('重新获取队员列表:', this.players)
+            uni.showToast({
+              title: '数据初始化成功',
+              icon: 'success'
+            })
+          } else {
+            // 初始化失败，使用降级数据
+            this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
+            uni.showToast({
+              title: '网络异常，使用离线数据',
+              icon: 'none',
+              duration: 3000
+            })
           }
         }
         
@@ -193,8 +225,9 @@ export default {
         // 使用默认队员数据
         this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
         uni.showToast({
-          title: '加载失败，使用默认数据',
-          icon: 'none'
+          title: '网络异常，使用离线数据',
+          icon: 'none',
+          duration: 3000
         })
       }
     },
@@ -327,6 +360,7 @@ export default {
   padding: 32rpx;
   background-color: #f5f5f5;
   min-height: 100vh;
+  padding-bottom: 120rpx; /* 为自定义 tabBar 留出空间 */
 }
 
 .section {

@@ -1,7 +1,11 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_storage = require("../../utils/storage.js");
+const CustomTabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
 const _sfc_main = {
+  components: {
+    CustomTabbar
+  },
   data() {
     return {
       currentTimeRange: "thisMonth",
@@ -17,6 +21,16 @@ const _sfc_main = {
       sortField: "totalScore",
       sortOrder: "desc"
     };
+  },
+  onLoad() {
+    this.loadData();
+  },
+  onShow() {
+    this.$nextTick(() => {
+      if (this.$refs.customTabbar) {
+        this.$refs.customTabbar.setCurrentIndex();
+      }
+    });
   },
   computed: {
     dateRangeText() {
@@ -77,7 +91,7 @@ const _sfc_main = {
         this.statsData = result.stats;
         this.currentMatches = result.matches;
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/double-stats/double-stats.vue:164", "加载数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/double-stats/double-stats.vue:184", "加载数据失败:", error);
         common_vendor.index.showToast({
           title: "加载失败",
           icon: "error"
@@ -111,6 +125,14 @@ const _sfc_main = {
     }
   }
 };
+if (!Array) {
+  const _easycom_custom_tabbar2 = common_vendor.resolveComponent("custom-tabbar");
+  _easycom_custom_tabbar2();
+}
+const _easycom_custom_tabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
+if (!Math) {
+  _easycom_custom_tabbar();
+}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.f($data.timeOptions, (item, index, i0) => {
@@ -143,6 +165,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         e: match.id
       };
     })
+  }, {
+    f: common_vendor.sr("customTabbar", "5e0101b7-0")
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5e0101b7"]]);

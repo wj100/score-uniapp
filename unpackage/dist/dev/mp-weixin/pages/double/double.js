@@ -1,7 +1,11 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_storage = require("../../utils/storage.js");
+const CustomTabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
 const _sfc_main = {
+  components: {
+    CustomTabbar
+  },
   data() {
     return {
       players: [],
@@ -17,6 +21,17 @@ const _sfc_main = {
       selectedPlayerB2Index: -1,
       todayMatches: []
     };
+  },
+  onLoad() {
+    this.loadData();
+  },
+  onShow() {
+    this.loadTodayMatches();
+    this.$nextTick(() => {
+      if (this.$refs.customTabbar) {
+        this.$refs.customTabbar.setCurrentIndex();
+      }
+    });
   },
   computed: {
     selectedPlayers() {
@@ -47,21 +62,21 @@ const _sfc_main = {
   methods: {
     async loadData() {
       try {
-        common_vendor.index.__f__("log", "at pages/double/double.vue:207", "开始加载队员数据...");
+        common_vendor.index.__f__("log", "at pages/double/double.vue:228", "开始加载队员数据...");
         this.players = await utils_storage.getPlayers();
-        common_vendor.index.__f__("log", "at pages/double/double.vue:209", "获取到的队员列表:", this.players);
+        common_vendor.index.__f__("log", "at pages/double/double.vue:230", "获取到的队员列表:", this.players);
         if (this.players.length === 0) {
-          common_vendor.index.__f__("log", "at pages/double/double.vue:212", "队员列表为空，尝试初始化...");
+          common_vendor.index.__f__("log", "at pages/double/double.vue:233", "队员列表为空，尝试初始化...");
           const initResult = await utils_storage.initPlayers();
-          common_vendor.index.__f__("log", "at pages/double/double.vue:215", "初始化结果:", initResult);
+          common_vendor.index.__f__("log", "at pages/double/double.vue:236", "初始化结果:", initResult);
           if (initResult) {
             this.players = await utils_storage.getPlayers();
-            common_vendor.index.__f__("log", "at pages/double/double.vue:218", "重新获取队员列表:", this.players);
+            common_vendor.index.__f__("log", "at pages/double/double.vue:239", "重新获取队员列表:", this.players);
           }
         }
         this.loadTodayMatches();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/double/double.vue:224", "加载队员数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/double/double.vue:245", "加载队员数据失败:", error);
         this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "加载失败，使用默认数据",
@@ -142,7 +157,7 @@ const _sfc_main = {
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/double/double.vue:322", "提交失败:", error);
+        common_vendor.index.__f__("error", "at pages/double/double.vue:343", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
@@ -165,6 +180,14 @@ const _sfc_main = {
     }
   }
 };
+if (!Array) {
+  const _easycom_custom_tabbar2 = common_vendor.resolveComponent("custom-tabbar");
+  _easycom_custom_tabbar2();
+}
+const _easycom_custom_tabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
+if (!Math) {
+  _easycom_custom_tabbar();
+}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.t($data.playerA1 || "选择队员1"),
@@ -201,6 +224,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         e: match.id
       };
     })
+  }, {
+    A: common_vendor.sr("customTabbar", "14f279f1-0")
   });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-14f279f1"]]);

@@ -2,6 +2,29 @@
 
 const db = uniCloud.database();
 
+// 数据库操作重试函数
+async function retryDatabaseOperation(operation, maxRetries = 3, delay = 1000) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      console.error(`数据库操作失败，第 ${i + 1} 次重试:`, error);
+      
+      // 检查是否是资源耗尽错误
+      if (error.message && error.message.includes('resource exhausted')) {
+        if (i === maxRetries - 1) {
+          throw new Error('数据库资源耗尽，请稍后重试');
+        }
+        // 等待更长时间后重试
+        await new Promise(resolve => setTimeout(resolve, delay * (i + 1) * 2));
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+
 exports.main = async (event, context) => {
   console.log('云函数收到请求:', event);
   const { action, data } = event;
@@ -61,10 +84,14 @@ exports.main = async (event, context) => {
 // 获取队员列表
 async function getPlayers() {
   try {
-    const res = await db.collection('players')
-      .where({status: 1})
-      .orderBy('create_time', 'desc')
-      .get();
+    console.log('开始获取队员列表...');
+    const res = await retryDatabaseOperation(async () => {
+      return await db.collection('players')
+        .where({status: 1})
+        .orderBy('create_time', 'desc')
+        .get();
+    });
+    console.log('数据库查询结果:', res);
     
     return {
       code: 0,
@@ -72,9 +99,10 @@ async function getPlayers() {
       data: res.data
     };
   } catch (error) {
+    console.error('获取队员列表失败:', error);
     return {
       code: -1,
-      message: '获取失败',
+      message: '获取失败: ' + error.message,
       error: error.message
     };
   }
@@ -93,9 +121,11 @@ async function addPlayer(data) {
     }
 
     // 检查是否已存在
-    const existRes = await db.collection('players')
-      .where({name: name, status: 1})
-      .get();
+    const existRes = await retryDatabaseOperation(async () => {
+      return await db.collection('players')
+        .where({name: name, status: 1})
+        .get();
+    });
     
     if (existRes.data.length > 0) {
       return {
@@ -104,11 +134,13 @@ async function addPlayer(data) {
       };
     }
 
-    const res = await db.collection('players').add({
-      name,
-      avatar: avatar || '',
-      status: 1,
-      create_time: new Date()
+    const res = await retryDatabaseOperation(async () => {
+      return await db.collection('players').add({
+        name,
+        avatar: avatar || '',
+        status: 1,
+        create_time: new Date()
+      });
     });
 
     return {
@@ -131,9 +163,11 @@ async function initPlayers() {
     const defaultPlayers = ['吉志', '小鲁', '建华', '汪骏', '杭宁'];
     
     // 检查是否已经初始化过
-    const existingPlayers = await db.collection('players')
-      .where({status: 1})
-      .get();
+    const existingPlayers = await retryDatabaseOperation(async () => {
+      return await db.collection('players')
+        .where({status: 1})
+        .get();
+    });
     
     if (existingPlayers.data.length > 0) {
       return {
@@ -145,11 +179,13 @@ async function initPlayers() {
 
     // 批量添加默认队员
     const addPromises = defaultPlayers.map(name => {
-      return db.collection('players').add({
-        name,
-        avatar: '',
-        status: 1,
-        create_time: new Date()
+      return retryDatabaseOperation(async () => {
+        return await db.collection('players').add({
+          name,
+          avatar: '',
+          status: 1,
+          create_time: new Date()
+        });
       });
     });
 
@@ -192,14 +228,16 @@ async function submitSingleMatch(data) {
     const player2Score = parseInt(score2);
 
     // 1. 先插入比赛记录
-    const matchRes = await db.collection('scoring_match').add({
-      time: matchTime,
-      match_type: 1, // 单打
-      player1: player1,
-      player2: player2,
-      score1: player1Score,
-      score2: player2Score,
-      match_name: match_name || ''
+    const matchRes = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_match').add({
+        time: matchTime,
+        match_type: 1, // 单打
+        player1: player1,
+        player2: player2,
+        score1: player1Score,
+        score2: player2Score,
+        match_name: match_name || ''
+      });
     });
 
     const matchId = matchRes.id;
@@ -224,7 +262,9 @@ async function submitSingleMatch(data) {
       }
     ];
 
-    await db.collection('scoring_player_match').add(playerMatches);
+    await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_player_match').add(playerMatches);
+    });
 
     return {
       code: 0,
@@ -275,11 +315,13 @@ async function getSingleMatches(data) {
       }
     }
 
-    const res = await db.collection('scoring_match')
-      .where(whereCondition)
-      .orderBy('time', 'desc')
-      .limit(parseInt(limit))
-      .get();
+    const res = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_match')
+        .where(whereCondition)
+        .orderBy('time', 'desc')
+        .limit(parseInt(limit))
+        .get();
+    });
 
     // 转换数据格式以保持兼容性
     const formattedData = res.data.map(match => ({
@@ -537,11 +579,13 @@ async function getDoubleMatches(data) {
       }
     }
 
-    const res = await db.collection('scoring_match')
-      .where(whereCondition)
-      .orderBy('time', 'desc')
-      .limit(parseInt(limit))
-      .get();
+    const res = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_match')
+        .where(whereCondition)
+        .orderBy('time', 'desc')
+        .limit(parseInt(limit))
+        .get();
+    });
 
     // 转换数据格式以保持兼容性
     const formattedData = res.data.map(match => ({

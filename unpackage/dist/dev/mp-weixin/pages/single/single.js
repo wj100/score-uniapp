@@ -1,7 +1,11 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const utils_storage = require("../../utils/storage.js");
+const CustomTabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
 const _sfc_main = {
+  components: {
+    CustomTabbar
+  },
   data() {
     return {
       players: [],
@@ -35,29 +39,50 @@ const _sfc_main = {
   },
   onShow() {
     this.loadTodayMatches();
+    this.$nextTick(() => {
+      if (this.$refs.customTabbar) {
+        this.$refs.customTabbar.setCurrentIndex();
+      }
+    });
   },
   methods: {
     async loadData() {
       try {
-        common_vendor.index.__f__("log", "at pages/single/single.vue:175", "开始加载队员数据...");
+        common_vendor.index.__f__("log", "at pages/single/single.vue:188", "开始加载队员数据...");
         this.players = await utils_storage.getPlayers();
-        common_vendor.index.__f__("log", "at pages/single/single.vue:177", "获取到的队员列表:", this.players);
+        common_vendor.index.__f__("log", "at pages/single/single.vue:190", "获取到的队员列表:", this.players);
         if (this.players.length === 0) {
-          common_vendor.index.__f__("log", "at pages/single/single.vue:180", "队员列表为空，尝试初始化...");
+          common_vendor.index.__f__("log", "at pages/single/single.vue:193", "队员列表为空，尝试初始化...");
+          common_vendor.index.showLoading({
+            title: "正在初始化数据..."
+          });
           const initResult = await utils_storage.initPlayers();
-          common_vendor.index.__f__("log", "at pages/single/single.vue:183", "初始化结果:", initResult);
+          common_vendor.index.__f__("log", "at pages/single/single.vue:200", "初始化结果:", initResult);
+          common_vendor.index.hideLoading();
           if (initResult) {
             this.players = await utils_storage.getPlayers();
-            common_vendor.index.__f__("log", "at pages/single/single.vue:186", "重新获取队员列表:", this.players);
+            common_vendor.index.__f__("log", "at pages/single/single.vue:206", "重新获取队员列表:", this.players);
+            common_vendor.index.showToast({
+              title: "数据初始化成功",
+              icon: "success"
+            });
+          } else {
+            this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+            common_vendor.index.showToast({
+              title: "网络异常，使用离线数据",
+              icon: "none",
+              duration: 3e3
+            });
           }
         }
         this.loadTodayMatches();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:192", "加载队员数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:224", "加载队员数据失败:", error);
         this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
-          title: "加载失败，使用默认数据",
-          icon: "none"
+          title: "网络异常，使用离线数据",
+          icon: "none",
+          duration: 3e3
         });
       }
     },
@@ -120,7 +145,7 @@ const _sfc_main = {
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:274", "提交失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:307", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
@@ -164,6 +189,14 @@ const _sfc_main = {
     }
   }
 };
+if (!Array) {
+  const _easycom_custom_tabbar2 = common_vendor.resolveComponent("custom-tabbar");
+  _easycom_custom_tabbar2();
+}
+const _easycom_custom_tabbar = () => "../../components/custom-tabbar/custom-tabbar.js";
+if (!Math) {
+  _easycom_custom_tabbar();
+}
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return common_vendor.e({
     a: common_vendor.t($data.player1 || "选择队员1"),
@@ -209,7 +242,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     y: common_vendor.o(() => {
     }),
     z: common_vendor.o((...args) => $options.closePlayerModal && $options.closePlayerModal(...args))
-  } : {});
+  } : {}, {
+    A: common_vendor.sr("customTabbar", "6410b918-0")
+  });
 }
 const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6410b918"]]);
 wx.createPage(MiniProgramPage);
