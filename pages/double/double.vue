@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { getPlayers, saveDoubleMatch, getDoubleMatches } from '@/utils/storage.js'
+import { getPlayers, saveDoubleMatch, getDoubleMatches, initPlayers } from '@/utils/storage.js'
 
 export default {
   data() {
@@ -202,15 +202,38 @@ export default {
   },
   
   methods: {
-    loadData() {
-      this.players = getPlayers()
-      this.loadTodayMatches()
+    async loadData() {
+      try {
+        console.log('开始加载队员数据...')
+        this.players = await getPlayers()
+        console.log('获取到的队员列表:', this.players)
+        
+        if (this.players.length === 0) {
+          console.log('队员列表为空，尝试初始化...')
+          // 尝试初始化队员
+          const initResult = await initPlayers()
+          console.log('初始化结果:', initResult)
+          if (initResult) {
+            this.players = await getPlayers()
+            console.log('重新获取队员列表:', this.players)
+          }
+        }
+        
+        this.loadTodayMatches()
+      } catch (error) {
+        console.error('加载队员数据失败:', error)
+        // 使用默认队员数据
+        this.players = ['吉志', '小鲁', '建华', '汪骏', '杭宁']
+        uni.showToast({
+          title: '加载失败，使用默认数据',
+          icon: 'none'
+        })
+      }
     },
     
-    loadTodayMatches() {
-      const allMatches = getDoubleMatches()
-      const today = new Date().toISOString().split('T')[0]
-      this.todayMatches = allMatches.filter(match => match.date === today)
+    async loadTodayMatches() {
+      const allMatches = await getDoubleMatches('today')
+      this.todayMatches = allMatches
     },
     
     onPlayerA1Change(e) {
@@ -261,34 +284,48 @@ export default {
       this.scoreB = e.detail.value
     },
     
-    submitScore() {
+    async submitScore() {
       if (!this.canSubmit) {
         return
       }
       
-      const match = {
-        teamA: [this.playerA1, this.playerA2],
-        teamB: [this.playerB1, this.playerB2],
-        scoreA: parseInt(this.scoreA),
-        scoreB: parseInt(this.scoreB)
-      }
+      uni.showLoading({
+        title: '提交中...'
+      })
       
-      const result = saveDoubleMatch(match)
-      if (result) {
-        uni.showToast({
-          title: '提交成功',
-          icon: 'success'
-        })
+      try {
+        const match = {
+          teamA: [this.playerA1, this.playerA2],
+          teamB: [this.playerB1, this.playerB2],
+          scoreA: parseInt(this.scoreA),
+          scoreB: parseInt(this.scoreB)
+        }
         
-        // 重置表单
-        this.resetForm()
-        // 刷新今日比赛
-        this.loadTodayMatches()
-      } else {
+        const result = await saveDoubleMatch(match)
+        if (result) {
+          uni.showToast({
+            title: '提交成功',
+            icon: 'success'
+          })
+          
+          // 重置表单
+          this.resetForm()
+          // 刷新今日比赛
+          this.loadTodayMatches()
+        } else {
+          uni.showToast({
+            title: '提交失败',
+            icon: 'error'
+          })
+        }
+      } catch (error) {
+        console.error('提交失败:', error)
         uni.showToast({
           title: '提交失败',
           icon: 'error'
         })
+      } finally {
+        uni.hideLoading()
       }
     },
     

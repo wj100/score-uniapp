@@ -7889,6 +7889,12 @@ const pages = [
     style: {
       navigationBarTitleText: "双打战绩"
     }
+  },
+  {
+    path: "pages/test",
+    style: {
+      navigationBarTitleText: "测试页面"
+    }
   }
 ];
 const globalStyle = {
@@ -10782,6 +10788,7 @@ let er = new class {
   } }), Ls(er), er.addInterceptor = F, er.removeInterceptor = K, er.interceptObject = B, "web" === P)
     ;
 })();
+var tr = er;
 exports._export_sfc = _export_sfc;
 exports.createSSRApp = createSSRApp;
 exports.e = e$1;
@@ -10789,4 +10796,5 @@ exports.f = f$1;
 exports.index = index;
 exports.o = o$1;
 exports.t = t$1;
+exports.tr = tr;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/common/vendor.js.map

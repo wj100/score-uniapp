@@ -1,0 +1,50 @@
+{
+  "bsonType": "object",
+  "required": ["time", "match_type", "player1", "player2", "score1", "score2"],
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "id": {
+      "bsonType": "int",
+      "description": "比赛ID，自增主键",
+      "title": "比赛ID"
+    },
+    "time": {
+      "bsonType": "timestamp",
+      "description": "比赛时间，比赛结束时间，精确到秒",
+      "title": "比赛时间"
+    },
+    "match_type": {
+      "bsonType": "int",
+      "description": "比赛类型，1表示单打，2表示双打",
+      "title": "比赛类型",
+      "enum": [1, 2]
+    },
+    "player1": {
+      "bsonType": "string",
+      "description": "队员1，双打就放双打两个人的名字加间隔符，单打就是个人名字",
+      "title": "队员1"
+    },
+    "player2": {
+      "bsonType": "string", 
+      "description": "队员2，同player1",
+      "title": "队员2"
+    },
+    "score1": {
+      "bsonType": "int",
+      "description": "player1的最终得分",
+      "title": "队员1得分"
+    },
+    "score2": {
+      "bsonType": "int",
+      "description": "player2的最终得分", 
+      "title": "队员2得分"
+    },
+    "match_name": {
+      "bsonType": "string",
+      "description": "预留字段，比赛名，允许为空",
+      "title": "比赛名"
+    }
+  }
+}

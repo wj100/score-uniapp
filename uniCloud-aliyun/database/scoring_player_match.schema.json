@@ -1,0 +1,46 @@
+{
+  "bsonType": "object",
+  "required": ["match_id", "time", "match_type", "player", "score", "result"],
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "id": {
+      "bsonType": "int",
+      "description": "个人比赛ID，自增主键",
+      "title": "个人比赛ID"
+    },
+    "match_id": {
+      "bsonType": "int",
+      "description": "映射比赛id，逻辑映射",
+      "title": "比赛ID"
+    },
+    "time": {
+      "bsonType": "timestamp",
+      "description": "比赛时间，直接取对应比赛id的时间填入，比赛结束时间，精确到秒",
+      "title": "比赛时间"
+    },
+    "match_type": {
+      "bsonType": "int",
+      "description": "比赛类型，1表示单打，2表示双打",
+      "title": "比赛类型",
+      "enum": [1, 2]
+    },
+    "player": {
+      "bsonType": "string",
+      "description": "个人名字，单人名字",
+      "title": "选手姓名"
+    },
+    "score": {
+      "bsonType": "int",
+      "description": "个人本场得分",
+      "title": "个人得分"
+    },
+    "result": {
+      "bsonType": "int",
+      "description": "胜负结果，1表示赢，0表示输",
+      "title": "胜负结果",
+      "enum": [0, 1]
+    }
+  }
+}

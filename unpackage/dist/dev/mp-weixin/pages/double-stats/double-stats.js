@@ -1,6 +1,6 @@
 "use strict";
-const utils_storage = require("../../utils/storage.js");
 const common_vendor = require("../../common/vendor.js");
+const utils_storage = require("../../utils/storage.js");
 const _sfc_main = {
   data() {
     return {
@@ -71,87 +71,18 @@ const _sfc_main = {
     this.loadData();
   },
   methods: {
-    loadData() {
-      const result = this.getDoubleStats(this.currentTimeRange);
-      this.statsData = result.stats;
-      this.currentMatches = result.matches;
-    },
-    getDoubleStats(timeRange = "all") {
-      const matches = utils_storage.getDoubleMatches();
-      const players = utils_storage.getPlayers();
-      let filteredMatches = matches;
-      if (timeRange !== "all") {
-        const startDate = /* @__PURE__ */ new Date();
-        switch (timeRange) {
-          case "today":
-            startDate.setHours(0, 0, 0, 0);
-            break;
-          case "yesterday":
-            startDate.setDate(startDate.getDate() - 1);
-            startDate.setHours(0, 0, 0, 0);
-            break;
-          case "thisMonth":
-            startDate.setDate(1);
-            startDate.setHours(0, 0, 0, 0);
-            break;
-          case "lastMonth":
-            startDate.setMonth(startDate.getMonth() - 1);
-            startDate.setDate(1);
-            startDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(startDate);
-            endDate.setMonth(endDate.getMonth() + 1);
-            endDate.setDate(0);
-            endDate.setHours(23, 59, 59, 999);
-            filteredMatches = matches.filter((match) => {
-              const matchDate = new Date(match.date);
-              return matchDate >= startDate && matchDate <= endDate;
-            });
-            break;
-        }
-        if (timeRange !== "lastMonth") {
-          filteredMatches = matches.filter((match) => {
-            const matchDate = new Date(match.date);
-            return matchDate >= startDate;
-          });
-        }
+    async loadData() {
+      try {
+        const result = await utils_storage.getDoubleStats(this.currentTimeRange);
+        this.statsData = result.stats;
+        this.currentMatches = result.matches;
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/double-stats/double-stats.vue:164", "加载数据失败:", error);
+        common_vendor.index.showToast({
+          title: "加载失败",
+          icon: "error"
+        });
       }
-      const stats = {};
-      players.forEach((player) => {
-        stats[player] = {
-          totalScore: 0,
-          wins: 0,
-          losses: 0,
-          totalMatches: 0
-        };
-      });
-      filteredMatches.forEach((match) => {
-        match.teamA.forEach((player) => {
-          if (stats[player]) {
-            stats[player].totalScore += match.scoreA;
-            stats[player].totalMatches++;
-            if (match.winner === "A") {
-              stats[player].wins++;
-            } else {
-              stats[player].losses++;
-            }
-          }
-        });
-        match.teamB.forEach((player) => {
-          if (stats[player]) {
-            stats[player].totalScore += match.scoreB;
-            stats[player].totalMatches++;
-            if (match.winner === "B") {
-              stats[player].wins++;
-            } else {
-              stats[player].losses++;
-            }
-          }
-        });
-      });
-      return {
-        stats,
-        matches: filteredMatches
-      };
     },
     changeTimeRange(range) {
       this.currentTimeRange = range;

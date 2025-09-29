@@ -1,6 +1,6 @@
 "use strict";
-const utils_storage = require("../../utils/storage.js");
 const common_vendor = require("../../common/vendor.js");
+const utils_storage = require("../../utils/storage.js");
 const _sfc_main = {
   data() {
     return {
@@ -71,10 +71,18 @@ const _sfc_main = {
     this.loadData();
   },
   methods: {
-    loadData() {
-      const result = utils_storage.getSingleStats(this.currentTimeRange);
-      this.statsData = result.stats;
-      this.currentMatches = result.matches;
+    async loadData() {
+      try {
+        const result = await utils_storage.getSingleStats(this.currentTimeRange);
+        this.statsData = result.stats;
+        this.currentMatches = result.matches;
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/single-stats/single-stats.vue:164", "加载数据失败:", error);
+        common_vendor.index.showToast({
+          title: "加载失败",
+          icon: "error"
+        });
+      }
     },
     changeTimeRange(range) {
       this.currentTimeRange = range;

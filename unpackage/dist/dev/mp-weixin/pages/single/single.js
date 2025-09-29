@@ -37,14 +37,33 @@ const _sfc_main = {
     this.loadTodayMatches();
   },
   methods: {
-    loadData() {
-      this.players = utils_storage.getPlayers();
-      this.loadTodayMatches();
+    async loadData() {
+      try {
+        common_vendor.index.__f__("log", "at pages/single/single.vue:175", "开始加载队员数据...");
+        this.players = await utils_storage.getPlayers();
+        common_vendor.index.__f__("log", "at pages/single/single.vue:177", "获取到的队员列表:", this.players);
+        if (this.players.length === 0) {
+          common_vendor.index.__f__("log", "at pages/single/single.vue:180", "队员列表为空，尝试初始化...");
+          const initResult = await utils_storage.initPlayers();
+          common_vendor.index.__f__("log", "at pages/single/single.vue:183", "初始化结果:", initResult);
+          if (initResult) {
+            this.players = await utils_storage.getPlayers();
+            common_vendor.index.__f__("log", "at pages/single/single.vue:186", "重新获取队员列表:", this.players);
+          }
+        }
+        this.loadTodayMatches();
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/single/single.vue:192", "加载队员数据失败:", error);
+        this.players = ["吉志", "小鲁", "建华", "汪骏", "杭宁"];
+        common_vendor.index.showToast({
+          title: "加载失败，使用默认数据",
+          icon: "none"
+        });
+      }
     },
-    loadTodayMatches() {
-      const allMatches = utils_storage.getSingleMatches();
-      const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-      this.todayMatches = allMatches.filter((match) => match.date === today);
+    async loadTodayMatches() {
+      const allMatches = await utils_storage.getSingleMatches("today");
+      this.todayMatches = allMatches;
     },
     onPlayer1Change(e) {
       this.selectedPlayer1Index = e.detail.value;
@@ -72,29 +91,42 @@ const _sfc_main = {
     onScore2Input(e) {
       this.score2 = e.detail.value;
     },
-    submitScore() {
+    async submitScore() {
       if (!this.canSubmit) {
         return;
       }
-      const match = {
-        player1: this.player1,
-        player2: this.player2,
-        score1: parseInt(this.score1),
-        score2: parseInt(this.score2)
-      };
-      const result = utils_storage.saveSingleMatch(match);
-      if (result) {
-        common_vendor.index.showToast({
-          title: "提交成功",
-          icon: "success"
-        });
-        this.resetForm();
-        this.loadTodayMatches();
-      } else {
+      common_vendor.index.showLoading({
+        title: "提交中..."
+      });
+      try {
+        const match = {
+          player1: this.player1,
+          player2: this.player2,
+          score1: parseInt(this.score1),
+          score2: parseInt(this.score2)
+        };
+        const result = await utils_storage.saveSingleMatch(match);
+        if (result) {
+          common_vendor.index.showToast({
+            title: "提交成功",
+            icon: "success"
+          });
+          this.resetForm();
+          this.loadTodayMatches();
+        } else {
+          common_vendor.index.showToast({
+            title: "提交失败",
+            icon: "error"
+          });
+        }
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/single/single.vue:274", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
         });
+      } finally {
+        common_vendor.index.hideLoading();
       }
     },
     resetForm() {

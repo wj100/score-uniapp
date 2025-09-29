@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { getPlayers, getDoubleMatches } from '@/utils/storage.js'
+import { getDoubleStats } from '@/utils/storage.js'
 
 export default {
   data() {
@@ -155,98 +155,17 @@ export default {
   },
   
   methods: {
-    loadData() {
-      const result = this.getDoubleStats(this.currentTimeRange)
-      this.statsData = result.stats
-      this.currentMatches = result.matches
-    },
-    
-    getDoubleStats(timeRange = 'all') {
-      const matches = getDoubleMatches()
-      const players = getPlayers()
-      const now = new Date()
-      let filteredMatches = matches
-      
-      // 根据时间范围过滤
-      if (timeRange !== 'all') {
-        const startDate = new Date()
-        switch(timeRange) {
-          case 'today':
-            startDate.setHours(0, 0, 0, 0)
-            break
-          case 'yesterday':
-            startDate.setDate(startDate.getDate() - 1)
-            startDate.setHours(0, 0, 0, 0)
-            break
-          case 'thisMonth':
-            startDate.setDate(1)
-            startDate.setHours(0, 0, 0, 0)
-            break
-          case 'lastMonth':
-            startDate.setMonth(startDate.getMonth() - 1)
-            startDate.setDate(1)
-            startDate.setHours(0, 0, 0, 0)
-            const endDate = new Date(startDate)
-            endDate.setMonth(endDate.getMonth() + 1)
-            endDate.setDate(0)
-            endDate.setHours(23, 59, 59, 999)
-            filteredMatches = matches.filter(match => {
-              const matchDate = new Date(match.date)
-              return matchDate >= startDate && matchDate <= endDate
-            })
-            break
-        }
-        
-        if (timeRange !== 'lastMonth') {
-          filteredMatches = matches.filter(match => {
-            const matchDate = new Date(match.date)
-            return matchDate >= startDate
-          })
-        }
-      }
-      
-      const stats = {}
-      
-      players.forEach(player => {
-        stats[player] = {
-          totalScore: 0,
-          wins: 0,
-          losses: 0,
-          totalMatches: 0
-        }
-      })
-      
-      filteredMatches.forEach(match => {
-        // 处理A队
-        match.teamA.forEach(player => {
-          if (stats[player]) {
-            stats[player].totalScore += match.scoreA
-            stats[player].totalMatches++
-            if (match.winner === 'A') {
-              stats[player].wins++
-            } else {
-              stats[player].losses++
-            }
-          }
+    async loadData() {
+      try {
+        const result = await getDoubleStats(this.currentTimeRange)
+        this.statsData = result.stats
+        this.currentMatches = result.matches
+      } catch (error) {
+        console.error('加载数据失败:', error)
+        uni.showToast({
+          title: '加载失败',
+          icon: 'error'
         })
-        
-        // 处理B队
-        match.teamB.forEach(player => {
-          if (stats[player]) {
-            stats[player].totalScore += match.scoreB
-            stats[player].totalMatches++
-            if (match.winner === 'B') {
-              stats[player].wins++
-            } else {
-              stats[player].losses++
-            }
-          }
-        })
-      })
-      
-      return {
-        stats,
-        matches: filteredMatches
       }
     },
     

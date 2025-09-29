@@ -155,10 +155,18 @@ export default {
   },
   
   methods: {
-    loadData() {
-      const result = getSingleStats(this.currentTimeRange)
-      this.statsData = result.stats
-      this.currentMatches = result.matches
+    async loadData() {
+      try {
+        const result = await getSingleStats(this.currentTimeRange)
+        this.statsData = result.stats
+        this.currentMatches = result.matches
+      } catch (error) {
+        console.error('加载数据失败:', error)
+        uni.showToast({
+          title: '加载失败',
+          icon: 'error'
+        })
+      }
     },
     
     changeTimeRange(range) {

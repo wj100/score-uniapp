@@ -1,0 +1,7 @@
+{
+  "name": "badminton-api",
+  "version": "1.0.0",
+  "description": "羽毛球记分系统API",
+  "main": "index.js",
+  "dependencies": {}
+}
