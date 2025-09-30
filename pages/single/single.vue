@@ -90,7 +90,9 @@
           >
             <text class="match-players">{{ match.player1 }}-{{ match.player2 }}</text>
             <text class="match-score">{{ match.score1 }} - {{ match.score2 }}</text>
-            <text class="match-action">🟢</text>
+            <view class="match-actions">
+              <text class="delete-btn" @click="deleteMatch(match)">🗑️</text>
+            </view>
           </view>
         </view>
       </view>
@@ -349,6 +351,66 @@ export default {
       this.showPlayerModal = false
       this.selectedModalPlayer = ''
       this.selectingPlayer = ''
+    },
+    
+    async deleteMatch(match) {
+      // 显示确认对话框
+      const result = await new Promise((resolve) => {
+        uni.showModal({
+          title: '确认删除',
+          content: `确定要删除 ${match.player1} vs ${match.player2} 的比赛记录吗？`,
+          success: (res) => {
+            resolve(res.confirm)
+          },
+          fail: () => {
+            resolve(false)
+          }
+        })
+      })
+      
+      if (!result) {
+        return
+      }
+      
+      uni.showLoading({
+        title: '删除中...'
+      })
+      
+      try {
+        // 调用云函数删除比赛记录
+        const deleteResult = await uniCloud.callFunction({
+          name: 'badminton-api',
+          data: {
+            action: 'deleteSingleMatch',
+            data: {
+              match_id: match._id || match.id
+            }
+          }
+        })
+        
+        if (deleteResult.result.code === 0) {
+          uni.showToast({
+            title: '删除成功',
+            icon: 'success'
+          })
+          
+          // 刷新今日比赛列表
+          this.loadTodayMatches()
+        } else {
+          uni.showToast({
+            title: '删除失败',
+            icon: 'error'
+          })
+        }
+      } catch (error) {
+        console.error('删除失败:', error)
+        uni.showToast({
+          title: '删除失败',
+          icon: 'error'
+        })
+      } finally {
+        uni.hideLoading()
+      }
     }
   }
 }
@@ -512,11 +574,33 @@ export default {
 
 .match-players,
 .match-score,
-.match-action {
+.match-actions {
   flex: 1;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+}
+
+.match-status {
   font-size: 28rpx;
-  color: #333;
+}
+
+.delete-btn {
+  font-size: 32rpx;
+  color: #ff4757;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 8rpx;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #ff475720;
+}
+
+.delete-btn:active {
+  background-color: #ff475740;
 }
 
 .modal-overlay {
