@@ -24,11 +24,24 @@
       <text class="section-title">数据统计</text>
       <view class="stats-table">
         <view class="stats-header">
-          <text class="header-cell">队员 ▼</text>
-          <text class="header-cell">总分 ▼</text>
-          <text class="header-cell">胜场 ▼</text>
-          <text class="header-cell">负场 ▼</text>
-          <text class="header-cell">胜率</text>
+          <text class="header-cell" @click="sortBy('name')">
+            队员 {{ getSortIcon('name') }}
+          </text>
+          <text class="header-cell" @click="sortBy('totalScore')">
+            总分 {{ getSortIcon('totalScore') }}
+          </text>
+          <text class="header-cell" @click="sortBy('wins')">
+            胜场 {{ getSortIcon('wins') }}
+          </text>
+          <text class="header-cell" @click="sortBy('totalMatches')">
+            总场次 {{ getSortIcon('totalMatches') }}
+          </text>
+          <text class="header-cell" @click="sortBy('winRate')">
+            胜率 {{ getSortIcon('winRate') }}
+          </text>
+          <text class="header-cell" @click="sortBy('avgScore')">
+            平均分 {{ getSortIcon('avgScore') }}
+          </text>
         </view>
         <view 
           v-for="player in sortedStats" 
@@ -38,8 +51,9 @@
           <text class="cell">{{ player.name }}</text>
           <text class="cell">{{ player.totalScore }}</text>
           <text class="cell">{{ player.wins }}</text>
-          <text class="cell">{{ player.losses }}</text>
+          <text class="cell">{{ player.totalMatches }}</text>
           <text class="cell">{{ player.winRate }}</text>
+          <text class="cell">{{ player.avgScore }}</text>
         </view>
       </view>
     </view>
@@ -132,8 +146,11 @@ export default {
       Object.keys(this.statsData).forEach(playerName => {
         const playerStats = this.statsData[playerName]
         const winRate = playerStats.totalMatches > 0 
-          ? Math.round((playerStats.wins / playerStats.totalMatches) * 100) + '%'
-          : '0%'
+          ? ((playerStats.wins / playerStats.totalMatches) * 100).toFixed(1) + '%'
+          : '0.0%'
+        const avgScore = playerStats.totalMatches > 0
+          ? (playerStats.totalScore / playerStats.totalMatches).toFixed(1)
+          : '0.0'
         
         stats.push({
           name: playerName,
@@ -141,16 +158,35 @@ export default {
           wins: playerStats.wins,
           losses: playerStats.losses,
           totalMatches: playerStats.totalMatches,
-          winRate
+          winRate,
+          avgScore
         })
       })
       
-      // 按总分降序排列
+      // 按选定字段排序
       return stats.sort((a, b) => {
-        if (this.sortField === 'totalScore') {
-          return this.sortOrder === 'desc' ? b.totalScore - a.totalScore : a.totalScore - b.totalScore
+        let aVal = a[this.sortField]
+        let bVal = b[this.sortField]
+        
+        // 处理百分比字段（去除%符号进行数值比较）
+        if (this.sortField === 'winRate') {
+          aVal = parseFloat(aVal.replace('%', ''))
+          bVal = parseFloat(bVal.replace('%', ''))
         }
-        return 0
+        // 处理数值字段
+        else if (typeof aVal === 'string' && !isNaN(parseFloat(aVal))) {
+          aVal = parseFloat(aVal)
+          bVal = parseFloat(bVal)
+        }
+        // 处理字符串字段
+        else if (typeof aVal === 'string') {
+          return this.sortOrder === 'desc' 
+            ? bVal.localeCompare(aVal, 'zh-CN') 
+            : aVal.localeCompare(bVal, 'zh-CN')
+        }
+        
+        // 数值比较
+        return this.sortOrder === 'desc' ? bVal - aVal : aVal - bVal
       })
     }
   },
@@ -181,6 +217,24 @@ export default {
     changeTimeRange(range) {
       this.currentTimeRange = range
       this.loadData()
+    },
+    
+    sortBy(field) {
+      if (this.sortField === field) {
+        // 如果点击同一字段，切换排序方向
+        this.sortOrder = this.sortOrder === 'desc' ? 'asc' : 'desc'
+      } else {
+        // 如果点击不同字段，设置新字段并默认降序
+        this.sortField = field
+        this.sortOrder = 'desc'
+      }
+    },
+    
+    getSortIcon(field) {
+      if (this.sortField !== field) {
+        return '↕' // 默认双箭头
+      }
+      return this.sortOrder === 'desc' ? '↓' : '↑'
     },
     
     formatDate(dateValue) {
@@ -298,6 +352,18 @@ export default {
   font-size: 24rpx;
   color: #666;
   font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.header-cell:hover {
+  background: rgba(0,0,0,0.05);
+  border-radius: 8rpx;
+}
+
+.header-cell:active {
+  background: rgba(0,0,0,0.1);
 }
 
 .stats-row {

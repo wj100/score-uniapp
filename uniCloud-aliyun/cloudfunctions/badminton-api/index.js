@@ -390,7 +390,7 @@ async function getSingleStats(data) {
 
     // 从选手比赛详情表获取统计数据
     const playerMatchesRes = await db.collection('scoring_player_match')
-      .where(whereCondition)
+      .where(whereCondition).limit(10000)
       .get();
 
     const stats = {};
@@ -654,7 +654,7 @@ async function getDoubleStats(data) {
 
     // 从选手比赛详情表获取统计数据
     const playerMatchesRes = await db.collection('scoring_player_match')
-      .where(whereCondition)
+      .where(whereCondition).limit(10000)
       .get();
 
     const stats = {};
