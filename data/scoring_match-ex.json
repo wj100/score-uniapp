@@ -1,5 +1,0 @@
-{"_id":{"$oid":"68da3e1a149854d2e043b699"},"time":{"$date":"2025-09-29T08:06:50.742Z"},"match_type":1,"player1":"杭宁","player2":"小鲁","score1":111,"score2":11,"match_name":""}
-{"_id":{"$oid":"68da3e95eef9cb5e0d3c4be6"},"time":{"$date":"2025-09-29T08:08:52.719Z"},"match_type":2,"player1":"杭宁&小鲁","player2":"建华&言志","score1":333,"score2":22,"match_name":""}
-{"_id":{"$oid":"68da3fa3a09a9b19e3c80273"},"time":{"$date":"2025-09-29T08:13:23.611Z"},"match_type":1,"player1":"言志","player2":"建华","score1":22,"score2":3,"match_name":""}
-{"_id":{"$oid":"68da47ae149854d2e044acda"},"time":{"$date":"2025-09-29T08:47:42.329Z"},"match_type":1,"player1":"建华","player2":"小鲁","score1":222,"score2":22,"match_name":""}
-{"_id":{"$oid":"68da480e9755e3437ac91a8d"},"time":{"$date":"2025-09-29T08:49:18.307Z"},"match_type":1,"player1":"言志","player2":"小鲁","score1":21,"score2":19,"match_name":"测试比赛"}

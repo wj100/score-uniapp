@@ -46,7 +46,7 @@
 
     <!-- 单打对战记录 -->
     <view class="matches-section">
-      <text class="section-title">单打对战记录</text>
+      <text class="section-title">单打对战记录：{{ currentMatches.length }}条</text>
       <view class="matches-list">
         <view v-if="currentMatches.length === 0" class="no-data">
           <text>暂无数据</text>

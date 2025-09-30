@@ -425,7 +425,7 @@ async function getSingleStats(data) {
     });
 
     // 获取比赛记录用于显示
-    const matchesResult = await getSingleMatches({ timeRange, limit: 1000 });
+    const matchesResult = await getSingleMatches({ timeRange, limit: 10000 });
     const matches = matchesResult.code === 0 ? matchesResult.data : [];
 
     return {
@@ -689,7 +689,7 @@ async function getDoubleStats(data) {
     });
 
     // 获取比赛记录用于显示
-    const matchesResult = await getDoubleMatches({ timeRange, limit: 1000 });
+    const matchesResult = await getDoubleMatches({ timeRange, limit: 10000 });
     const matches = matchesResult.code === 0 ? matchesResult.data : [];
 
     return {
