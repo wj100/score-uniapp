@@ -27,7 +27,7 @@
           <text class="header-cell">队员 ▼</text>
           <text class="header-cell">总分 ▼</text>
           <text class="header-cell">胜场 ▼</text>
-          <text class="header-cell">负场 ▼</text>
+          <text class="header-cell">总场次 ▼</text>
           <text class="header-cell">胜率</text>
         </view>
         <view 
@@ -38,7 +38,7 @@
           <text class="cell">{{ player.name }}</text>
           <text class="cell">{{ player.totalScore }}</text>
           <text class="cell">{{ player.wins }}</text>
-          <text class="cell">{{ player.losses }}</text>
+          <text class="cell">{{ player.totalMatches }}</text>
           <text class="cell">{{ player.winRate }}</text>
         </view>
       </view>
