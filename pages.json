@@ -25,6 +25,12 @@
 			}
 		},
 		{
+			"path": "pages/single-analysis/single-analysis",
+			"style": {
+				"navigationBarTitleText": "单打分析"
+			}
+		},
+		{
 			"path": "pages/test",
 			"style": {
 				"navigationBarTitleText": "测试页面"
@@ -56,6 +62,10 @@
 			{
 				"pagePath": "pages/single-stats/single-stats",
 				"text": "单打战绩"
+			},
+			{
+				"pagePath": "pages/single-analysis/single-analysis",
+				"text": "单打分析"
 			},
 			{
 				"pagePath": "pages/double/double",

@@ -290,3 +290,26 @@ export async function getDoubleStats(timeRange = 'all') {
     return { stats: {}, matches: [] }
   }
 }
+
+// 获取单打对战分析
+export async function getSingleMatchAnalysis(params) {
+  try {
+    const result = await uniCloud.callFunction({
+      name: 'badminton-api',
+      data: {
+        action: 'getSingleMatchAnalysis',
+        data: params
+      }
+    })
+    
+    if (result.result.code === 0) {
+      return result.result.data
+    } else {
+      console.error('获取单打分析数据失败:', result.result.message)
+      return { stats: {}, matches: [] }
+    }
+  } catch (error) {
+    console.error('获取单打分析数据异常:', error)
+    return { stats: {}, matches: [] }
+  }
+}

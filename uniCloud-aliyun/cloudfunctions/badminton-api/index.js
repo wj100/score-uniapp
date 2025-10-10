@@ -52,6 +52,9 @@ exports.main = async (event, context) => {
       case 'getSingleStats':
         console.log('执行getSingleStats', data);
         return await getSingleStats(data);
+      case 'getSingleMatchAnalysis':
+        console.log('执行getSingleMatchAnalysis', data);
+        return await getSingleMatchAnalysis(data);
       
       // 双打比赛相关
       case 'submitDoubleMatch':
@@ -712,6 +715,155 @@ async function getDoubleStats(data) {
     return {
       code: -1,
       message: '获取失败',
+      error: error.message
+    };
+  }
+}
+
+// 获取单打对战分析
+async function getSingleMatchAnalysis(data) {
+  try {
+    const { player1, player2, timeRange = 'all' } = data;
+    console.log('单打分析参数:', { player1, player2, timeRange });
+
+    if (!player1 || !player2) {
+      return {
+        code: -1,
+        message: '缺少队员参数'
+      };
+    }
+
+    // 构建时间条件
+    let timeCondition = {};
+    const now = new Date();
+    
+    switch(timeRange) {
+      case 'today':
+        const todayStart = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+        const todayEnd = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() / 1000);
+        timeCondition = {
+          time: db.command.gte(todayStart).and(db.command.lt(todayEnd))
+        };
+        break;
+      case 'yesterday':
+        const yesterdayStart = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime() / 1000);
+        const yesterdayEnd = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() / 1000);
+        timeCondition = {
+          time: db.command.gte(yesterdayStart).and(db.command.lt(yesterdayEnd))
+        };
+        break;
+      case 'thisMonth':
+        const monthStart = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+        const monthEnd = Math.floor(new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime() / 1000);
+        timeCondition = {
+          time: db.command.gte(monthStart).and(db.command.lt(monthEnd))
+        };
+        break;
+      case 'lastMonth':
+        const lastMonthStart = Math.floor(new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime() / 1000);
+        const lastMonthEnd = Math.floor(new Date(now.getFullYear(), now.getMonth(), 1).getTime() / 1000);
+        timeCondition = {
+          time: db.command.gte(lastMonthStart).and(db.command.lt(lastMonthEnd))
+        };
+        break;
+      case 'all':
+      default:
+        timeCondition = {};
+        break;
+    }
+
+    // 查询两人之间的对战记录
+    const matchesRes = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_match')
+        .where({
+          match_type: 1, // 单打
+          ...timeCondition,
+          $or: [
+            { player1: player1, player2: player2 },
+            { player1: player2, player2: player1 }
+          ]
+        })
+        .orderBy('time', 'desc')
+        .limit(10000)
+        .get();
+    });
+
+    const matches = matchesRes.data;
+    console.log('找到对战记录:', matches.length, '场');
+
+    // 计算统计数据
+    let player1Wins = 0;
+    let player2Wins = 0;
+    let player1TotalScore = 0;
+    let player2TotalScore = 0;
+    let player1MaxScore = 0;
+    let player2MaxScore = 0;
+
+    matches.forEach(match => {
+      if (match.player1 === player1) {
+        player1TotalScore += match.score1;
+        player2TotalScore += match.score2;
+        player1MaxScore = Math.max(player1MaxScore, match.score1);
+        player2MaxScore = Math.max(player2MaxScore, match.score2);
+        
+        if (match.score1 > match.score2) {
+          player1Wins++;
+        } else {
+          player2Wins++;
+        }
+      } else {
+        player1TotalScore += match.score2;
+        player2TotalScore += match.score1;
+        player1MaxScore = Math.max(player1MaxScore, match.score2);
+        player2MaxScore = Math.max(player2MaxScore, match.score1);
+        
+        if (match.score2 > match.score1) {
+          player1Wins++;
+        } else {
+          player2Wins++;
+        }
+      }
+    });
+
+    const totalMatches = matches.length;
+    const player1WinRate = totalMatches > 0 ? ((player1Wins / totalMatches) * 100).toFixed(1) : '0.0';
+    const player2WinRate = totalMatches > 0 ? ((player2Wins / totalMatches) * 100).toFixed(1) : '0.0';
+    const player1AvgScore = totalMatches > 0 ? (player1TotalScore / totalMatches).toFixed(1) : '0.0';
+    const player2AvgScore = totalMatches > 0 ? (player2TotalScore / totalMatches).toFixed(1) : '0.0';
+
+    const stats = {
+      totalMatches,
+      player1Wins,
+      player2Wins,
+      player1WinRate,
+      player2WinRate,
+      player1TotalScore,
+      player2TotalScore,
+      player1AvgScore,
+      player2AvgScore,
+      player1MaxScore,
+      player2MaxScore
+    };
+
+    // 格式化比赛记录，添加日期字段
+    const formattedMatches = matches.map(match => ({
+      ...match,
+      date: match.time // 确保 date 字段存在，指向 time 字段
+    }));
+
+    return {
+      code: 0,
+      message: '分析成功',
+      data: {
+        stats,
+        matches: formattedMatches
+      }
+    };
+  } catch (error) {
+    console.error('单打分析失败:', error);
+    return {
+      code: -1,
+      message: '分析失败',
       error: error.message
     };
   }
