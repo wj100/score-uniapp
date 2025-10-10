@@ -52,21 +52,31 @@ const _sfc_main = {
       const stats = [];
       Object.keys(this.statsData).forEach((playerName) => {
         const playerStats = this.statsData[playerName];
-        const winRate = playerStats.totalMatches > 0 ? Math.round(playerStats.wins / playerStats.totalMatches * 100) + "%" : "0%";
+        const winRate = playerStats.totalMatches > 0 ? (playerStats.wins / playerStats.totalMatches * 100).toFixed(1) + "%" : "0.0%";
+        const avgScore = playerStats.totalMatches > 0 ? (playerStats.totalScore / playerStats.totalMatches).toFixed(1) : "0.0";
         stats.push({
           name: playerName,
           totalScore: playerStats.totalScore,
           wins: playerStats.wins,
           losses: playerStats.losses,
           totalMatches: playerStats.totalMatches,
-          winRate
+          winRate,
+          avgScore
         });
       });
       return stats.sort((a, b) => {
-        if (this.sortField === "totalScore") {
-          return this.sortOrder === "desc" ? b.totalScore - a.totalScore : a.totalScore - b.totalScore;
+        let aVal = a[this.sortField];
+        let bVal = b[this.sortField];
+        if (this.sortField === "winRate") {
+          aVal = parseFloat(aVal.replace("%", ""));
+          bVal = parseFloat(bVal.replace("%", ""));
+        } else if (typeof aVal === "string" && !isNaN(parseFloat(aVal))) {
+          aVal = parseFloat(aVal);
+          bVal = parseFloat(bVal);
+        } else if (typeof aVal === "string") {
+          return this.sortOrder === "desc" ? bVal.localeCompare(aVal, "zh-CN") : aVal.localeCompare(bVal, "zh-CN");
         }
-        return 0;
+        return this.sortOrder === "desc" ? bVal - aVal : aVal - bVal;
       });
     }
   },
@@ -83,7 +93,7 @@ const _sfc_main = {
         this.statsData = result.stats;
         this.currentMatches = result.matches;
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single-stats/single-stats.vue:173", "加载数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/single-stats/single-stats.vue:209", "加载数据失败:", error);
         common_vendor.index.showToast({
           title: "加载失败",
           icon: "error"
@@ -93,6 +103,20 @@ const _sfc_main = {
     changeTimeRange(range) {
       this.currentTimeRange = range;
       this.loadData();
+    },
+    sortBy(field) {
+      if (this.sortField === field) {
+        this.sortOrder = this.sortOrder === "desc" ? "asc" : "desc";
+      } else {
+        this.sortField = field;
+        this.sortOrder = "desc";
+      }
+    },
+    getSortIcon(field) {
+      if (this.sortField !== field) {
+        return "↕";
+      }
+      return this.sortOrder === "desc" ? "↓" : "↑";
     },
     formatDate(dateValue) {
       let date;
@@ -123,19 +147,33 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       };
     }),
     b: common_vendor.t($options.dateRangeText),
-    c: common_vendor.f($options.sortedStats, (player, k0, i0) => {
+    c: common_vendor.t($options.getSortIcon("name")),
+    d: common_vendor.o(($event) => $options.sortBy("name")),
+    e: common_vendor.t($options.getSortIcon("totalScore")),
+    f: common_vendor.o(($event) => $options.sortBy("totalScore")),
+    g: common_vendor.t($options.getSortIcon("wins")),
+    h: common_vendor.o(($event) => $options.sortBy("wins")),
+    i: common_vendor.t($options.getSortIcon("totalMatches")),
+    j: common_vendor.o(($event) => $options.sortBy("totalMatches")),
+    k: common_vendor.t($options.getSortIcon("winRate")),
+    l: common_vendor.o(($event) => $options.sortBy("winRate")),
+    m: common_vendor.t($options.getSortIcon("avgScore")),
+    n: common_vendor.o(($event) => $options.sortBy("avgScore")),
+    o: common_vendor.f($options.sortedStats, (player, k0, i0) => {
       return {
         a: common_vendor.t(player.name),
         b: common_vendor.t(player.totalScore),
         c: common_vendor.t(player.wins),
-        d: common_vendor.t(player.losses),
+        d: common_vendor.t(player.totalMatches),
         e: common_vendor.t(player.winRate),
-        f: player.name
+        f: common_vendor.t(player.avgScore),
+        g: player.name
       };
     }),
-    d: $data.currentMatches.length === 0
+    p: common_vendor.t($data.currentMatches.length),
+    q: $data.currentMatches.length === 0
   }, $data.currentMatches.length === 0 ? {} : {
-    e: common_vendor.f($data.currentMatches, (match, k0, i0) => {
+    r: common_vendor.f($data.currentMatches, (match, k0, i0) => {
       return {
         a: common_vendor.t($options.formatDate(match.time)),
         b: common_vendor.t(match.player1),

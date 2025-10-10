@@ -151,9 +151,29 @@
 }
 .match-teams.data-v-14f279f1,
 .match-score.data-v-14f279f1,
-.match-action.data-v-14f279f1 {
+.match-actions.data-v-14f279f1 {
   flex: 1;
   text-align: center;
   font-size: 26rpx;
   color: #333;
+}
+.match-actions.data-v-14f279f1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+}
+.delete-btn.data-v-14f279f1 {
+  font-size: 32rpx;
+  color: #ff4757;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 8rpx;
+  transition: background-color 0.2s;
+}
+.delete-btn.data-v-14f279f1:hover {
+  background-color: #ff475720;
+}
+.delete-btn.data-v-14f279f1:active {
+  background-color: #ff475740;
 }

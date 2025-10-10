@@ -133,11 +133,29 @@
 }
 .match-players.data-v-6410b918,
 .match-score.data-v-6410b918,
-.match-action.data-v-6410b918 {
+.match-actions.data-v-6410b918 {
   flex: 1;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+}
+.match-status.data-v-6410b918 {
   font-size: 28rpx;
-  color: #333;
+}
+.delete-btn.data-v-6410b918 {
+  font-size: 32rpx;
+  color: #ff4757;
+  cursor: pointer;
+  padding: 8rpx;
+  border-radius: 8rpx;
+  transition: background-color 0.2s;
+}
+.delete-btn.data-v-6410b918:hover {
+  background-color: #ff475720;
+}
+.delete-btn.data-v-6410b918:active {
+  background-color: #ff475740;
 }
 .modal-overlay.data-v-6410b918 {
   position: fixed;

@@ -4,6 +4,7 @@
     "pages/single-stats/single-stats",
     "pages/double/double",
     "pages/double-stats/double-stats",
+    "pages/single-analysis/single-analysis",
     "pages/test"
   ],
   "window": {
@@ -25,6 +26,10 @@
       {
         "pagePath": "pages/single-stats/single-stats",
         "text": "单打战绩"
+      },
+      {
+        "pagePath": "pages/single-analysis/single-analysis",
+        "text": "单打分析"
       },
       {
         "pagePath": "pages/double/double",

@@ -205,9 +205,30 @@ async function getDoubleStats(timeRange = "all") {
     return { stats: {}, matches: [] };
   }
 }
+async function getSingleMatchAnalysis(params) {
+  try {
+    const result = await common_vendor.tr.callFunction({
+      name: "badminton-api",
+      data: {
+        action: "getSingleMatchAnalysis",
+        data: params
+      }
+    });
+    if (result.result.code === 0) {
+      return result.result.data;
+    } else {
+      common_vendor.index.__f__("error", "at utils/storage.js:308", "获取单打分析数据失败:", result.result.message);
+      return { stats: {}, matches: [] };
+    }
+  } catch (error) {
+    common_vendor.index.__f__("error", "at utils/storage.js:312", "获取单打分析数据异常:", error);
+    return { stats: {}, matches: [] };
+  }
+}
 exports.getDoubleMatches = getDoubleMatches;
 exports.getDoubleStats = getDoubleStats;
 exports.getPlayers = getPlayers;
+exports.getSingleMatchAnalysis = getSingleMatchAnalysis;
 exports.getSingleMatches = getSingleMatches;
 exports.getSingleStats = getSingleStats;
 exports.initPlayers = initPlayers;

@@ -7043,7 +7043,7 @@ function isConsoleWritable() {
 function initRuntimeSocketService() {
   const hosts = "127.0.0.1,10.242.89.206";
   const port = "8090";
-  const id = "mp-weixin_Kl8jIM";
+  const id = "mp-weixin_7qhaVG";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -8015,12 +8015,24 @@ const pages = [
     }
   },
   {
+    path: "pages/single-analysis/single-analysis",
+    style: {
+      navigationBarTitleText: "单打分析"
+    }
+  },
+  {
     path: "pages/test",
     style: {
       navigationBarTitleText: "测试页面"
     }
   }
 ];
+const easycom = {
+  autoscan: true,
+  custom: {
+    "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+  }
+};
 const globalStyle = {
   navigationBarTextStyle: "white",
   navigationBarTitleText: "羽毛球记分",
@@ -8042,6 +8054,10 @@ const tabBar = {
       text: "单打战绩"
     },
     {
+      pagePath: "pages/single-analysis/single-analysis",
+      text: "单打分析"
+    },
+    {
       pagePath: "pages/double/double",
       text: "双打"
     },
@@ -8054,6 +8070,7 @@ const tabBar = {
 const uniIdRouter = {};
 const e = {
   pages,
+  easycom,
   globalStyle,
   tabBar,
   uniIdRouter

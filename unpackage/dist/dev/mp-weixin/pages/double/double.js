@@ -53,21 +53,21 @@ const _sfc_main = {
   methods: {
     async loadData() {
       try {
-        common_vendor.index.__f__("log", "at pages/double/double.vue:216", "开始加载队员数据...");
+        common_vendor.index.__f__("log", "at pages/double/double.vue:217", "开始加载队员数据...");
         this.players = await utils_storage.getPlayers();
-        common_vendor.index.__f__("log", "at pages/double/double.vue:218", "获取到的队员列表:", this.players);
+        common_vendor.index.__f__("log", "at pages/double/double.vue:219", "获取到的队员列表:", this.players);
         if (this.players.length === 0) {
-          common_vendor.index.__f__("log", "at pages/double/double.vue:221", "队员列表为空，尝试初始化...");
+          common_vendor.index.__f__("log", "at pages/double/double.vue:222", "队员列表为空，尝试初始化...");
           const initResult = await utils_storage.initPlayers();
-          common_vendor.index.__f__("log", "at pages/double/double.vue:224", "初始化结果:", initResult);
+          common_vendor.index.__f__("log", "at pages/double/double.vue:225", "初始化结果:", initResult);
           if (initResult) {
             this.players = await utils_storage.getPlayers();
-            common_vendor.index.__f__("log", "at pages/double/double.vue:227", "重新获取队员列表:", this.players);
+            common_vendor.index.__f__("log", "at pages/double/double.vue:228", "重新获取队员列表:", this.players);
           }
         }
         this.loadTodayMatches();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/double/double.vue:233", "加载队员数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/double/double.vue:234", "加载队员数据失败:", error);
         this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "加载失败，使用默认数据",
@@ -148,7 +148,7 @@ const _sfc_main = {
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/double/double.vue:331", "提交失败:", error);
+        common_vendor.index.__f__("error", "at pages/double/double.vue:332", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
@@ -168,6 +168,60 @@ const _sfc_main = {
       this.selectedPlayerA2Index = -1;
       this.selectedPlayerB1Index = -1;
       this.selectedPlayerB2Index = -1;
+    },
+    async deleteMatch(match) {
+      common_vendor.index.__f__("log", "at pages/double/double.vue:357", "要删除的match对象:", match);
+      common_vendor.index.__f__("log", "at pages/double/double.vue:358", "match.id:", match.id);
+      common_vendor.index.__f__("log", "at pages/double/double.vue:359", "match._id:", match._id);
+      const result = await new Promise((resolve) => {
+        common_vendor.index.showModal({
+          title: "确认删除",
+          content: `确定要删除 ${match.teamA.join("&")} vs ${match.teamB.join("&")} 的双打比赛记录吗？`,
+          success: (res) => {
+            resolve(res.confirm);
+          },
+          fail: () => {
+            resolve(false);
+          }
+        });
+      });
+      if (!result) {
+        return;
+      }
+      common_vendor.index.showLoading({
+        title: "删除中..."
+      });
+      try {
+        const deleteResult = await common_vendor.tr.callFunction({
+          name: "badminton-api",
+          data: {
+            action: "deleteDoubleMatch",
+            data: {
+              match_id: match._id || match.id
+            }
+          }
+        });
+        if (deleteResult.result.code === 0) {
+          common_vendor.index.showToast({
+            title: "删除成功",
+            icon: "success"
+          });
+          this.loadTodayMatches();
+        } else {
+          common_vendor.index.showToast({
+            title: "删除失败",
+            icon: "error"
+          });
+        }
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/double/double.vue:410", "删除失败:", error);
+        common_vendor.index.showToast({
+          title: "删除失败",
+          icon: "error"
+        });
+      } finally {
+        common_vendor.index.hideLoading();
+      }
     }
   }
 };
@@ -204,7 +258,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         b: common_vendor.t(match.teamB.join("&")),
         c: common_vendor.t(match.scoreA),
         d: common_vendor.t(match.scoreB),
-        e: match.id
+        e: common_vendor.o(($event) => $options.deleteMatch(match), match.id),
+        f: match.id
       };
     })
   });

@@ -68,9 +68,21 @@
 .header-cell.data-v-54d5c735 {
   flex: 1;
   text-align: center;
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #666;
   font-weight: bold;
+  min-width: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+          user-select: none;
+  transition: all 0.2s ease;
+}
+.header-cell.data-v-54d5c735:hover {
+  background: rgba(0,0,0,0.05);
+  border-radius: 8rpx;
+}
+.header-cell.data-v-54d5c735:active {
+  background: rgba(0,0,0,0.1);
 }
 .stats-row.data-v-54d5c735 {
   display: flex;
@@ -83,8 +95,9 @@
 .cell.data-v-54d5c735 {
   flex: 1;
   text-align: center;
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #333;
+  min-width: 0;
 }
 .matches-section.data-v-54d5c735 {
   margin-bottom: 48rpx;

@@ -71,6 +71,17 @@
   font-size: 24rpx;
   color: #666;
   font-weight: bold;
+  cursor: pointer;
+  -webkit-user-select: none;
+          user-select: none;
+  transition: all 0.2s ease;
+}
+.header-cell.data-v-5e0101b7:hover {
+  background: rgba(0,0,0,0.05);
+  border-radius: 8rpx;
+}
+.header-cell.data-v-5e0101b7:active {
+  background: rgba(0,0,0,0.1);
 }
 .stats-row.data-v-5e0101b7 {
   display: flex;

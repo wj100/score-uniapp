@@ -6,6 +6,7 @@ if (!Math) {
   "./pages/single-stats/single-stats.js";
   "./pages/double/double.js";
   "./pages/double-stats/double-stats.js";
+  "./pages/single-analysis/single-analysis.js";
   "./pages/test.js";
 }
 const _sfc_main = {

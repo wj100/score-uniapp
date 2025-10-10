@@ -48,20 +48,20 @@ const _sfc_main = {
   methods: {
     async loadData() {
       try {
-        common_vendor.index.__f__("log", "at pages/single/single.vue:187", "开始加载队员数据...");
+        common_vendor.index.__f__("log", "at pages/single/single.vue:189", "开始加载队员数据...");
         this.players = await utils_storage.getPlayers();
-        common_vendor.index.__f__("log", "at pages/single/single.vue:189", "获取到的队员列表:", this.players);
+        common_vendor.index.__f__("log", "at pages/single/single.vue:191", "获取到的队员列表:", this.players);
         if (this.players.length === 0) {
-          common_vendor.index.__f__("log", "at pages/single/single.vue:192", "队员列表为空，尝试初始化...");
+          common_vendor.index.__f__("log", "at pages/single/single.vue:194", "队员列表为空，尝试初始化...");
           common_vendor.index.showLoading({
             title: "正在初始化数据..."
           });
           const initResult = await utils_storage.initPlayers();
-          common_vendor.index.__f__("log", "at pages/single/single.vue:199", "初始化结果:", initResult);
+          common_vendor.index.__f__("log", "at pages/single/single.vue:201", "初始化结果:", initResult);
           common_vendor.index.hideLoading();
           if (initResult) {
             this.players = await utils_storage.getPlayers();
-            common_vendor.index.__f__("log", "at pages/single/single.vue:205", "重新获取队员列表:", this.players);
+            common_vendor.index.__f__("log", "at pages/single/single.vue:207", "重新获取队员列表:", this.players);
             common_vendor.index.showToast({
               title: "数据初始化成功",
               icon: "success"
@@ -77,7 +77,7 @@ const _sfc_main = {
         }
         this.loadTodayMatches();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:223", "加载队员数据失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:225", "加载队员数据失败:", error);
         this.players = ["言志", "小鲁", "建华", "汪骏", "杭宁"];
         common_vendor.index.showToast({
           title: "网络异常，使用离线数据",
@@ -145,7 +145,7 @@ const _sfc_main = {
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/single/single.vue:306", "提交失败:", error);
+        common_vendor.index.__f__("error", "at pages/single/single.vue:308", "提交失败:", error);
         common_vendor.index.showToast({
           title: "提交失败",
           icon: "error"
@@ -186,6 +186,57 @@ const _sfc_main = {
       this.showPlayerModal = false;
       this.selectedModalPlayer = "";
       this.selectingPlayer = "";
+    },
+    async deleteMatch(match) {
+      const result = await new Promise((resolve) => {
+        common_vendor.index.showModal({
+          title: "确认删除",
+          content: `确定要删除 ${match.player1} vs ${match.player2} 的比赛记录吗？`,
+          success: (res) => {
+            resolve(res.confirm);
+          },
+          fail: () => {
+            resolve(false);
+          }
+        });
+      });
+      if (!result) {
+        return;
+      }
+      common_vendor.index.showLoading({
+        title: "删除中..."
+      });
+      try {
+        const deleteResult = await common_vendor.tr.callFunction({
+          name: "badminton-api",
+          data: {
+            action: "deleteSingleMatch",
+            data: {
+              match_id: match._id || match.id
+            }
+          }
+        });
+        if (deleteResult.result.code === 0) {
+          common_vendor.index.showToast({
+            title: "删除成功",
+            icon: "success"
+          });
+          this.loadTodayMatches();
+        } else {
+          common_vendor.index.showToast({
+            title: "删除失败",
+            icon: "error"
+          });
+        }
+      } catch (error) {
+        common_vendor.index.__f__("error", "at pages/single/single.vue:406", "删除失败:", error);
+        common_vendor.index.showToast({
+          title: "删除失败",
+          icon: "error"
+        });
+      } finally {
+        common_vendor.index.hideLoading();
+      }
     }
   }
 };
@@ -216,7 +267,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         b: common_vendor.t(match.player2),
         c: common_vendor.t(match.score1),
         d: common_vendor.t(match.score2),
-        e: match.id
+        e: common_vendor.o(($event) => $options.deleteMatch(match), match.id),
+        f: match.id
       };
     })
   }, {
