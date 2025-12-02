@@ -868,3 +868,121 @@ async function getSingleMatchAnalysis(data) {
     };
   }
 }
+
+// 删除单打比赛
+async function deleteSingleMatch(data) {
+  try {
+    const { match_id } = data;
+    
+    if (!match_id) {
+      return {
+        code: -1,
+        message: '比赛ID不能为空'
+      };
+    }
+
+    console.log('删除单打比赛，match_id:', match_id);
+
+    // 1. 删除比赛记录表中的记录
+    // 尝试使用 _id 或 id 字段查询
+    const matchRes = await retryDatabaseOperation(async () => {
+      // 先尝试用 id 字段查询
+      let res = await db.collection('scoring_match')
+        .where({ id: match_id, match_type: 1 })
+        .remove();
+      
+      // 如果没有删除任何记录，尝试用 _id 字段查询
+      if (res.deleted === 0) {
+        res = await db.collection('scoring_match')
+          .doc(match_id)
+          .remove();
+      }
+      
+      return res;
+    });
+
+    // 2. 删除选手比赛详情表中的记录
+    const playerMatchRes = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_player_match')
+        .where({ match_id: match_id, match_type: 1 })
+        .remove();
+    });
+
+    console.log('删除结果:', { matchRes, playerMatchRes });
+
+    return {
+      code: 0,
+      message: '删除成功',
+      data: {
+        match_deleted: matchRes.deleted,
+        player_matches_deleted: playerMatchRes.deleted
+      }
+    };
+  } catch (error) {
+    console.error('删除单打比赛失败:', error);
+    return {
+      code: -1,
+      message: '删除失败',
+      error: error.message
+    };
+  }
+}
+
+// 删除双打比赛
+async function deleteDoubleMatch(data) {
+  try {
+    const { match_id } = data;
+    
+    if (!match_id) {
+      return {
+        code: -1,
+        message: '比赛ID不能为空'
+      };
+    }
+
+    console.log('删除双打比赛，match_id:', match_id);
+
+    // 1. 删除比赛记录表中的记录
+    // 尝试使用 _id 或 id 字段查询
+    const matchRes = await retryDatabaseOperation(async () => {
+      // 先尝试用 id 字段查询
+      let res = await db.collection('scoring_match')
+        .where({ id: match_id, match_type: 2 })
+        .remove();
+      
+      // 如果没有删除任何记录，尝试用 _id 字段查询
+      if (res.deleted === 0) {
+        res = await db.collection('scoring_match')
+          .doc(match_id)
+          .remove();
+      }
+      
+      return res;
+    });
+
+    // 2. 删除选手比赛详情表中的记录
+    const playerMatchRes = await retryDatabaseOperation(async () => {
+      return await db.collection('scoring_player_match')
+        .where({ match_id: match_id, match_type: 2 })
+        .remove();
+    });
+
+    console.log('删除结果:', { matchRes, playerMatchRes });
+
+    return {
+      code: 0,
+      message: '删除成功',
+      data: {
+        match_deleted: matchRes.deleted,
+        player_matches_deleted: playerMatchRes.deleted
+      }
+    };
+  } catch (error) {
+    console.error('删除双打比赛失败:', error);
+    return {
+      code: -1,
+      message: '删除失败',
+      error: error.message
+    };
+  }
+}

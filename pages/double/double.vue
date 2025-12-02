@@ -353,11 +353,6 @@ export default {
     },
     
     async deleteMatch(match) {
-      // 调试：输出match对象
-      console.log('要删除的match对象:', match);
-      console.log('match.id:', match.id);
-      console.log('match._id:', match._id);
-      
       // 显示确认对话框
       const result = await new Promise((resolve) => {
         uni.showModal({
